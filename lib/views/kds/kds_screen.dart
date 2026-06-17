@@ -37,10 +37,8 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
     final wsUrl = AppConstants.baseUrl.replaceFirst('/api/v1', '');
     _socket = io.io(
       '$wsUrl/ws/partner/orders/live',
-      io.OptionBuilder()
-          .setTransports(['websocket'])
-          .setExtraHeaders({'Authorization': 'Bearer $token'})
-          .build(),
+      io.OptionBuilder().setTransports(['websocket']).setExtraHeaders(
+          {'Authorization': 'Bearer $token'}).build(),
     );
 
     _socket!.onConnect((_) {
@@ -86,41 +84,35 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
     final activeOrders = kdsState.orders
         .where((o) => ['PLACED', 'ACCEPTED', 'PREPARING'].contains(o.status))
         .toList();
-    final readyOrders = kdsState.orders
-        .where((o) => o.status == 'READY')
-        .toList();
+    final readyOrders =
+        kdsState.orders.where((o) => o.status == 'READY').toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1200),
+      backgroundColor: AppColors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF2D1F00),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: Colors.white70, size: 20),
-          onPressed: () => context.go('/dashboard'),
-        ),
+        backgroundColor: AppColors.white,
         title: Row(children: [
-          const Icon(Icons.kitchen_rounded, color: Color(0xFFFFB300), size: 22),
+          const Icon(Icons.kitchen_rounded,
+              color: AppColors.textPrimary, size: 22),
           const SizedBox(width: 8),
           const Text('Kitchen Display',
               style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 17)),
           const SizedBox(width: 12),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: activeOrders.isNotEmpty
-                  ? const Color(0xFFFF5722)
-                  : const Color(0xFF4CAF50),
+                  ? AppColors.cardBorder
+                  : AppColors.cardBorder,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               '${activeOrders.length} active',
               style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.w600),
             ),
@@ -128,17 +120,17 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
         ]),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Color(0xFFFFB300)),
+            icon:
+                const Icon(Icons.refresh_rounded, color: AppColors.textPrimary),
             onPressed: () =>
                 ref.read(liveOrdersProvider.notifier).fetchOrders(),
           ),
         ],
       ),
       body: kdsState.isLoading && kdsState.orders.isEmpty
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation(Color(0xFFFFB300))),
+                  valueColor: AlwaysStoppedAnimation(AppColors.textPrimary)),
             )
           : kdsState.orders.isEmpty
               ? Center(
@@ -146,15 +138,15 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.restaurant_menu,
-                          color: Color(0x60FFB300), size: 64),
+                          color: AppColors.cardBorder, size: 64),
                       const SizedBox(height: 16),
                       const Text('No active orders',
                           style: TextStyle(
-                              color: Color(0xFFFFB300), fontSize: 18)),
+                              color: AppColors.textPrimary, fontSize: 18)),
                       const SizedBox(height: 8),
                       const Text('New orders will appear here',
                           style: TextStyle(
-                              color: Colors.white30, fontSize: 14)),
+                              color: AppColors.textSecondary, fontSize: 14)),
                     ],
                   ),
                 )
@@ -199,7 +191,7 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
                           child: Text(
                             'READY FOR PICKUP',
                             style: TextStyle(
-                              color: Color(0xFF4ADE80),
+                              color: AppColors.success,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 1.5,
@@ -218,8 +210,8 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
                             childAspectRatio: 0.8,
                           ),
                           delegate: SliverChildBuilderDelegate(
-                            (_, i) =>
-                                _KdsOrderCard(order: readyOrders[i], isDone: true),
+                            (_, i) => _KdsOrderCard(
+                                order: readyOrders[i], isDone: true),
                             childCount: readyOrders.length,
                           ),
                         ),
@@ -245,10 +237,10 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
 
   // KDS amber/kitchen palette per order status
   Color get _borderColor => switch (widget.order.status) {
-        'PLACED' => const Color(0xFFFFB300),   // amber – new
-        'ACCEPTED' => const Color(0xFF29B6F6), // blue – accepted
-        'PREPARING' => const Color(0xFFFF7043), // deep orange – cooking
-        'READY' => const Color(0xFF66BB6A),    // green – done
+        'PLACED' => AppColors.statusPlaced,
+        'ACCEPTED' => AppColors.statusAccepted,
+        'PREPARING' => AppColors.statusPreparing,
+        'READY' => AppColors.statusReady,
         _ => Colors.white24,
       };
 
@@ -257,7 +249,7 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
     final order = widget.order;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF231800),
+        color: AppColors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: _borderColor, width: 1.5),
       ),
@@ -278,7 +270,7 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
                   child: Text(
                     '#${order.orderNumber}',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
                     ),
@@ -298,8 +290,8 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
                   if (order.customerName != null)
                     Text(
                       order.customerName!,
-                      style: const TextStyle(
-                          color: Colors.white70, fontSize: 12),
+                      style:
+                          const TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                   const SizedBox(height: 8),
                   ...order.items.map((item) => Padding(
@@ -331,7 +323,7 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
                   Text(
                     AppFormatters.currency(order.total),
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
                     ),
@@ -357,7 +349,8 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Prep:', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                const Text('Prep:',
+                    style: TextStyle(color: Colors.white54, fontSize: 11)),
                 const SizedBox(width: 4),
                 ...[10, 15, 20, 30].map(
                   (t) => GestureDetector(
@@ -367,15 +360,14 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _prepTime == t
-                            ? AppColors.primary
-                            : Colors.white12,
+                        color:
+                            _prepTime == t ? AppColors.primary : Colors.white12,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         '${t}m',
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 10),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 10),
                       ),
                     ),
                   ),
@@ -390,11 +382,9 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
                     label: 'Reject',
                     color: AppColors.error,
                     onTap: () async {
-                      
                       await ref
                           .read(liveOrdersProvider.notifier)
                           .reject(order.id, 'Restaurant busy');
-                      
                     },
                   ),
                 ),
@@ -404,11 +394,9 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
                     label: 'Accept',
                     color: AppColors.success,
                     onTap: () async {
-                      
                       await ref
                           .read(liveOrdersProvider.notifier)
                           .accept(order.id, _prepTime);
-                      
                     },
                   ),
                 ),
@@ -425,9 +413,7 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
           label: '✓ Ready',
           color: AppColors.success,
           onTap: () async {
-            
             await ref.read(liveOrdersProvider.notifier).markReady(order.id);
-            
           },
         ),
       );
@@ -440,7 +426,8 @@ class _KdsBtn extends StatelessWidget {
   final String label;
   final Color color;
   final VoidCallback onTap;
-  const _KdsBtn({required this.label, required this.color, required this.onTap});
+  const _KdsBtn(
+      {required this.label, required this.color, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

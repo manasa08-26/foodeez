@@ -17,6 +17,7 @@ class ShellScaffold extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final location = GoRouterState.of(context).matchedLocation;
     final user = ref.watch(currentUserProvider);
+    debugPrint('User: $user');
     final canPop = context.canPop();
 
     return Scaffold(
@@ -110,8 +111,13 @@ class ShellScaffold extends ConsumerWidget {
     );
   }
 
-  Widget _buildDrawer(BuildContext context, WidgetRef ref, String location,
-      dynamic user) {
+  Widget _buildDrawer(
+      BuildContext context, WidgetRef ref, String location, dynamic user) {
+    debugPrint('================ USER DATA ================');
+    debugPrint(user.toString());
+    debugPrint('Display Name: ${user?.displayName}');
+    debugPrint('Email: ${user?.email}');
+    debugPrint('==========================================');
     return Drawer(
       child: Column(
         children: [
@@ -143,35 +149,48 @@ class ShellScaffold extends ConsumerWidget {
                   ),
                 ]),
                 const SizedBox(height: 16),
-                CircleAvatar(
-                  radius: 26,
-                  backgroundColor: Colors.white.withValues(alpha: 0.25),
-                  child:                   Text(
-                    _initial(user?.displayName),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 26,
+                      backgroundColor: Colors.white.withValues(alpha: 0.25),
+                      child: Text(
+                        _initial(user?.displayName),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  user?.displayName ?? 'Restaurant Admin',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  user?.email ?? '',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.75),
-                    fontSize: 12,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user?.displayName ?? 'Restaurant Admin',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            user?.email ?? '',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.75),
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Container(
@@ -204,8 +223,7 @@ class ShellScaffold extends ConsumerWidget {
                       location),
                   _NavItem(Icons.description_outlined, 'Documents',
                       '/documents', location),
-                  _NavItem(
-                      Icons.people_outline, 'Team', '/users', location),
+                  _NavItem(Icons.people_outline, 'Team', '/users', location),
                 ]),
                 _NavSection(title: 'Operations', items: [
                   _NavItem(Icons.store_mall_directory_rounded, 'Branches',
@@ -224,8 +242,7 @@ class ShellScaffold extends ConsumerWidget {
           // ── Logout ──────────────────────────────────────────────────────
           const Divider(height: 1),
           ListTile(
-            leading:
-                const Icon(Icons.logout_rounded, color: AppColors.error),
+            leading: const Icon(Icons.logout_rounded, color: AppColors.error),
             title: const Text('Logout',
                 style: TextStyle(
                     color: AppColors.error, fontWeight: FontWeight.w500)),
@@ -249,8 +266,7 @@ class ShellScaffold extends ConsumerWidget {
       return 'Branch Controls';
     }
     if (location.startsWith('/branches/new')) return 'New Branch';
-    if (location.startsWith('/branches/') &&
-        location.split('/').length > 2) {
+    if (location.startsWith('/branches/') && location.split('/').length > 2) {
       return 'Branch Detail';
     }
     if (location.startsWith('/orders/')) return 'Order Detail';

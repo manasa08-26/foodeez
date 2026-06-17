@@ -33,7 +33,8 @@ class OnboardingCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            const Icon(Icons.checklist_rounded, color: AppColors.primary, size: 18),
+            const Icon(Icons.checklist_rounded,
+                color: AppColors.primary, size: 18),
             const SizedBox(width: 8),
             const Text('Onboarding Progress',
                 style: TextStyle(fontWeight: FontWeight.bold)),
@@ -41,7 +42,8 @@ class OnboardingCard extends StatelessWidget {
           const SizedBox(height: 12),
           if (restaurantName.isNotEmpty)
             Text(restaurantName,
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
           const SizedBox(height: 10),
           Row(children: [
             Expanded(
@@ -64,26 +66,26 @@ class OnboardingCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             '$pct% complete${leadStatus.isNotEmpty ? ' · $leadStatus' : ''}',
-            style: const TextStyle(
-                color: AppColors.textSecondary, fontSize: 12),
+            style:
+                const TextStyle(color: AppColors.textSecondary, fontSize: 12),
           ),
-          if (progress < 1.0) ...[
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white),
-                onPressed: () {
-                  if (restaurantId != null) {
-                    context.go('/restaurant/onboarding');
-                  }
-                },
-                child: const Text('Continue Onboarding'),
-              ),
-            ),
-          ],
+          // if (progress < 1.0) ...[
+          //   const SizedBox(height: 12),
+          //   SizedBox(
+          //     width: double.infinity,
+          //     child: ElevatedButton(
+          //       style: ElevatedButton.styleFrom(
+          //           backgroundColor: AppColors.primary,
+          //           foregroundColor: Colors.white),
+          //       onPressed: () {
+          //         if (restaurantId != null) {
+          //           context.go('/restaurant/onboarding');
+          //         }
+          //       },
+          //       child: const Text('Continue Onboarding'),
+          //     ),
+          //   ),
+          // ],
         ]),
       ),
     );

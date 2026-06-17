@@ -45,7 +45,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Team Members')),
+      //appBar: AppBar(title: const Text('Team Members')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddUserSheet(restaurantId),
         icon: const Icon(Icons.person_add_rounded),
@@ -109,7 +109,8 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                             ],
                           ),
                         ),
-                        StatusBadge(status: user.role.split('_').last.toUpperCase()),
+                        StatusBadge(
+                            status: user.role.split('_').last.toUpperCase()),
                       ],
                     ),
                   );
@@ -140,13 +141,13 @@ class _AddUserSheetState extends ConsumerState<_AddUserSheet> {
     setState(() => _isLoading = true);
     try {
       await ref.read(restaurantServiceProvider).createRestaurantUser(
-            widget.restaurantId,
-            {
-              'displayName': _nameCtrl.text.trim(),
-              'email': _emailCtrl.text.trim(),
-              'role': _role,
-            },
-          );
+        widget.restaurantId,
+        {
+          'displayName': _nameCtrl.text.trim(),
+          'email': _emailCtrl.text.trim(),
+          'role': _role,
+        },
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Team member added!'),
@@ -184,8 +185,7 @@ class _AddUserSheetState extends ConsumerState<_AddUserSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Add Team Member',
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w700)),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             const SizedBox(height: 20),
             AppTextField(
               label: 'Full Name',
@@ -221,16 +221,15 @@ class _AddUserSheetState extends ConsumerState<_AddUserSheet> {
                     borderSide: const BorderSide(color: AppColors.border)),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                        color: AppColors.primary, width: 2)),
+                    borderSide:
+                        const BorderSide(color: AppColors.primary, width: 2)),
               ),
               items: _restaurantRoles
                   .map((r) => DropdownMenuItem(
                         value: r,
                         child: Text(r
                             .split('_')
-                            .map((w) =>
-                                w[0].toUpperCase() + w.substring(1))
+                            .map((w) => w[0].toUpperCase() + w.substring(1))
                             .join(' ')),
                       ))
                   .toList(),

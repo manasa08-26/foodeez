@@ -17,7 +17,7 @@ class SettlementScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Settlement'),
+        // title: const Text('Settlement'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -104,8 +104,7 @@ class SettlementScreen extends ConsumerWidget {
                           ),
                           StatCard(
                             title: 'Platform Fee (5%)',
-                            value:
-                                AppFormatters.currency(summary.platformFee),
+                            value: AppFormatters.currency(summary.platformFee),
                             icon: Icons.percent_rounded,
                             color: AppColors.error,
                           ),
@@ -142,13 +141,12 @@ class SettlementScreen extends ConsumerWidget {
                   height: 100,
                   child: Center(
                     child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation(AppColors.primary)),
+                        valueColor: AlwaysStoppedAnimation(AppColors.primary)),
                   ),
                 ),
               ),
-              error: (e, _) => SliverToBoxAdapter(
-                  child: _ErrorCard(message: e.toString())),
+              error: (e, _) =>
+                  SliverToBoxAdapter(child: _ErrorCard(message: e.toString())),
               data: (orders) => orders.isEmpty
                   ? const SliverToBoxAdapter(
                       child: Padding(
@@ -160,16 +158,15 @@ class SettlementScreen extends ConsumerWidget {
                                   size: 48, color: AppColors.textHint),
                               SizedBox(height: 12),
                               Text('No delivered orders today',
-                                  style:
-                                      TextStyle(color: AppColors.textSecondary)),
+                                  style: TextStyle(
+                                      color: AppColors.textSecondary)),
                             ],
                           ),
                         ),
                       ),
                     )
                   : SliverPadding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (_, i) => _OrderRow(order: orders[i]),
@@ -220,18 +217,19 @@ class _OrderRow extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('#${order.orderNumber}',
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w600)),
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
             if (order.customerName != null && order.customerName!.isNotEmpty)
               Text(order.customerName!,
                   style: const TextStyle(
                       fontSize: 12, color: AppColors.textSecondary)),
             if (timeStr.isNotEmpty)
               Text(timeStr,
-                  style: const TextStyle(
-                      fontSize: 11, color: AppColors.textHint)),
+                  style:
+                      const TextStyle(fontSize: 11, color: AppColors.textHint)),
           ]),
         ),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
@@ -244,8 +242,7 @@ class _OrderRow extends StatelessWidget {
           ),
           Text(
             'of ${AppFormatters.currency(order.total)}',
-            style: const TextStyle(
-                fontSize: 11, color: AppColors.textHint),
+            style: const TextStyle(fontSize: 11, color: AppColors.textHint),
           ),
         ]),
       ]),

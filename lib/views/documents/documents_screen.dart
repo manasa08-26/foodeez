@@ -30,7 +30,7 @@ class DocumentsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Documents')),
+      //appBar: AppBar(title: const Text('Documents')),
       body: docsAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(message: e.toString()),
@@ -47,14 +47,12 @@ class DocumentsScreen extends ConsumerWidget {
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.info_outline,
-                      color: AppColors.primary, size: 18),
+                  Icon(Icons.info_outline, color: AppColors.primary, size: 18),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Documents are verified by our team. Upload clear images.',
-                      style: TextStyle(
-                          fontSize: 13, color: AppColors.primary),
+                      style: TextStyle(fontSize: 13, color: AppColors.primary),
                     ),
                   ),
                 ],
@@ -75,7 +73,8 @@ class DocumentsScreen extends ConsumerWidget {
                 doc: doc,
                 label: type.$2,
                 restaurantId: restaurantId,
-                onUploaded: () => ref.invalidate(documentsProvider(restaurantId)),
+                onUploaded: () =>
+                    ref.invalidate(documentsProvider(restaurantId)),
               );
             }),
           ],
@@ -103,7 +102,9 @@ class _DocumentCard extends ConsumerWidget {
       type: FileType.custom,
       allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
     );
-    if (result == null || result.files.isEmpty || result.files.first.path == null) return;
+    if (result == null ||
+        result.files.isEmpty ||
+        result.files.first.path == null) return;
 
     final ok = await ref.read(documentUploadProvider.notifier).upload(
           restaurantId,
@@ -177,14 +178,14 @@ class _DocumentCard extends ConsumerWidget {
                   StatusBadge(status: doc.status)
                 else
                   const Text('Not uploaded',
-                      style: TextStyle(
-                          fontSize: 12, color: AppColors.textHint)),
+                      style:
+                          TextStyle(fontSize: 12, color: AppColors.textHint)),
                 if (doc.isRejected && doc.rejectionReason != null) ...[
                   const SizedBox(height: 4),
                   Text(
                     doc.rejectionReason!,
-                    style: const TextStyle(
-                        fontSize: 11, color: AppColors.error),
+                    style:
+                        const TextStyle(fontSize: 11, color: AppColors.error),
                   ),
                 ],
               ],
@@ -192,16 +193,16 @@ class _DocumentCard extends ConsumerWidget {
           ),
           if (!doc.isVerified)
             TextButton.icon(
-              onPressed: isUploading
-                  ? null
-                  : () => _pickAndUpload(context, ref),
+              onPressed:
+                  isUploading ? null : () => _pickAndUpload(context, ref),
               icon: isUploading
                   ? const SizedBox(
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation(AppColors.primary)))
+                          valueColor:
+                              AlwaysStoppedAnimation(AppColors.primary)))
                   : const Icon(Icons.upload_rounded, size: 18),
               label: Text(isUploaded ? 'Re-upload' : 'Upload'),
               style: TextButton.styleFrom(foregroundColor: AppColors.primary),

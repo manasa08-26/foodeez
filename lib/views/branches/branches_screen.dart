@@ -15,15 +15,14 @@ class BranchesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final restaurantId = ref.watch(restaurantIdProvider);
     if (restaurantId == null) {
-      return const Scaffold(
-          body: Center(child: Text('No restaurant linked')));
+      return const Scaffold(body: Center(child: Text('No restaurant linked')));
     }
 
     final branchesAsync = ref.watch(branchesProvider(restaurantId));
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Branches')),
+      // appBar: AppBar(title: const Text('Branches')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go('/branches/new'),
         icon: const Icon(Icons.add),
@@ -56,8 +55,7 @@ class BranchesScreen extends ConsumerWidget {
                   itemBuilder: (_, i) {
                     final b = branches[i];
                     return GestureDetector(
-                      onTap: () =>
-                          context.go('/branches/${b.id}'),
+                      onTap: () => context.go('/branches/${b.id}'),
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -135,9 +133,7 @@ class BranchesScreen extends ConsumerWidget {
                             const SizedBox(height: 12),
                             Row(
                               children: [
-                                _Action(
-                                    Icons.menu_book_rounded,
-                                    'Menu',
+                                _Action(Icons.menu_book_rounded, 'Menu',
                                     () => context.go('/branches/${b.id}/menu')),
                                 const SizedBox(width: 8),
                                 _Action(
@@ -146,8 +142,7 @@ class BranchesScreen extends ConsumerWidget {
                                     () => context
                                         .go('/branches/${b.id}/controls')),
                                 const Spacer(),
-                                _OnlineToggle(
-                                    b: b, restaurantId: restaurantId),
+                                _OnlineToggle(b: b, restaurantId: restaurantId),
                               ],
                             ),
                           ],
