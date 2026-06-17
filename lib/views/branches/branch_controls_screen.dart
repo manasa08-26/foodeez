@@ -37,16 +37,16 @@ class _BranchControlsScreenState extends ConsumerState<BranchControlsScreen> {
 
   Future<void> _save(String restaurantId) async {
     final ok = await ref.read(branchControlsProvider.notifier).updateControls(
-          restaurantId,
-          widget.branchId,
-          {
-            'openingTime': _openCtrl.text.trim(),
-            'closingTime': _closeCtrl.text.trim(),
-            'isOnline': _isOnline,
-            'busyMode': _busyMode,
-            'temporaryClosure': _temporaryClosure,
-          },
-        );
+      restaurantId,
+      widget.branchId,
+      {
+        'openingTime': _openCtrl.text.trim(),
+        'closingTime': _closeCtrl.text.trim(),
+        'isOnline': _isOnline,
+        'busyMode': _busyMode,
+        'temporaryClosure': _temporaryClosure,
+      },
+    );
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -69,7 +69,7 @@ class _BranchControlsScreenState extends ConsumerState<BranchControlsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Branch Controls')),
+      //appBar: AppBar(title: const Text('Branch Controls')),
       body: branchAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(message: e.toString()),
@@ -158,8 +158,10 @@ class _BranchControlsScreenState extends ConsumerState<BranchControlsScreen> {
                               child: AppTextField(
                                 label: 'Closing',
                                 controller: _closeCtrl,
-                                prefixIcon: const Icon(Icons.nightlight_outlined,
-                                    color: AppColors.textHint, size: 18),
+                                prefixIcon: const Icon(
+                                    Icons.nightlight_outlined,
+                                    color: AppColors.textHint,
+                                    size: 18),
                               ),
                             ),
                           ],

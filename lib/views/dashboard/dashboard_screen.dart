@@ -85,7 +85,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
-    print('[DashboardScreen] build with user=${user?.displayName}');
     final dataAsync = ref.watch(rawDashboardProvider);
 
     return Scaffold(
@@ -188,16 +187,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF1F0B3A), Color(0xFF31163E)],
+          colors: [Color(0xFF211039), Color(0xFF5A2DB4)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
+          bottomLeft: Radius.circular(32),
+          bottomRight: Radius.circular(32),
         ),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 52, 20, 24),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         // Date + greeting row
         Row(children: [
@@ -205,8 +204,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
-                'Good $_greeting, 👋',
-                style: const TextStyle(color: Colors.white60, fontSize: 13),
+                'Good $_greeting',
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.1,
+                ),
               ),
               const SizedBox(height: 4),
               // Prefer restaurant name for the header title; fall back to user displayName
@@ -216,14 +220,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     : (displayName.isNotEmpty ? displayName : 'Admin'),
                 style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700),
+                    fontSize: 24,
+                    height: 1.08,
+                    letterSpacing: -0.8,
+                    fontWeight: FontWeight.w900),
               ),
             ]),
           ),
           Text(
             DateFormat('EEE, d MMM').format(DateTime.now()),
-            style: const TextStyle(color: Colors.white60, fontSize: 13),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ]),
 
@@ -231,19 +241,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         if (restaurantName.isNotEmpty)
           Text(
             "Here's how $restaurantName is doing today.",
-            style: const TextStyle(color: Colors.white54, fontSize: 13),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
 
         // Active branch card inside hero
         if (branchName.isNotEmpty) ...[
           const SizedBox(height: 16),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                  colors: [Color(0xFF2A1740), Color(0xFF3B2250)]),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white24),
+                  colors: [Color(0xFF2D174E), Color(0xFF442069)]),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
             ),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -254,15 +268,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       children: [
                         const Text('ACTIVE BRANCH',
                             style: TextStyle(
-                                color: Color(0xFFB9A07A),
+                                color: Color(0xFFE7D8FF),
                                 fontSize: 11,
-                                letterSpacing: 1.2)),
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.8)),
                         const SizedBox(height: 6),
                         Text(branchName,
                             style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700)),
+                                fontSize: 19,
+                                letterSpacing: -0.4,
+                                fontWeight: FontWeight.w900)),
                       ]),
                 ),
                 if (status.isNotEmpty)
@@ -274,13 +290,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               status.toLowerCase() == 'online'
                           ? Colors.green[700]
                           : Colors.grey[700],
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(status.toUpperCase(),
                         style: const TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12)),
+                            fontWeight: FontWeight.w900,
+                            fontSize: 11)),
                   ),
               ]),
               const SizedBox(height: 12),
@@ -303,13 +319,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(label,
             style: const TextStyle(
-                fontSize: 11, color: Colors.white54, letterSpacing: 1.1)),
+                fontSize: 10.5,
+                color: Colors.white60,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.6)),
         const SizedBox(height: 4),
         Text(value,
             style: const TextStyle(
-                fontSize: 16,
+                fontSize: 17,
                 color: Colors.white,
-                fontWeight: FontWeight.bold)),
+                letterSpacing: -0.4,
+                fontWeight: FontWeight.w900)),
       ]),
     );
   }
@@ -325,48 +345,85 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final offlineN = (totalN - onlineN).clamp(0, totalN);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF6C769), width: 2),
+        borderRadius: BorderRadius.circular(24),
+        border:
+            Border.all(color: const Color(0xFFF0C35A).withValues(alpha: 0.9)),
         color: AppColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF0C35A).withValues(alpha: 0.16),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('TOTAL BRANCHES',
               style: TextStyle(
-                  color: Color(0xFFB9A07A),
-                  letterSpacing: 1.2,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12)),
+                  color: Color(0xFF9B6A00),
+                  letterSpacing: 0.7,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 11)),
           const SizedBox(height: 8),
           Text(totalN.toString(),
-              style:
-                  const TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
+              style: const TextStyle(
+                fontSize: 40,
+                height: 0.96,
+                letterSpacing: -1.4,
+                fontWeight: FontWeight.w900,
+              )),
           const SizedBox(height: 6),
-          Row(children: [
-            Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                    color: Colors.green, shape: BoxShape.circle)),
-            const SizedBox(width: 6),
-            Text('$onlineN online',
-                style: const TextStyle(color: Colors.green, fontSize: 13)),
-            const SizedBox(width: 12),
-            Text('$offlineN offline',
-                style: const TextStyle(
-                    color: AppColors.textSecondary, fontSize: 13)),
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                      color: Colors.green, shape: BoxShape.circle)),
+              const SizedBox(width: 6),
+              Text('$onlineN online',
+                  style: const TextStyle(
+                      color: Colors.green,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800)),
+              const SizedBox(width: 12),
+              Text('$offlineN offline',
+                  style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700)),
+            ]),
+            const SizedBox(height: 8),
+            // Toggle: switch between showing all branches and only online branches
+            Row(children: [
+              Switch.adaptive(
+                value: _branchFilter == 'online',
+                activeThumbColor: const Color(0xFFF0C35A),
+                onChanged: (v) {
+                  setState(() => _branchFilter = v ? 'online' : 'all');
+                },
+              ),
+              const SizedBox(width: 6),
+              Text(
+                _branchFilter == 'online'
+                    ? 'Showing online branches'
+                    : 'Showing all branches',
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              ),
+            ]),
           ]),
         ]),
         GestureDetector(
           onTap: () => context.go('/branches'),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             decoration: BoxDecoration(
-              color: const Color(0xFFF6C769).withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFF6C769)),
+              color: const Color(0xFFFFF6DD),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: const Color(0xFFF0C35A)),
             ),
             child: const Row(children: [
               Text('Manage',

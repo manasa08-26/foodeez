@@ -16,21 +16,6 @@ class SettlementScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        // title: const Text('Settlement'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Chip(
-              label: Text(
-                DateFormat('d MMM yyyy').format(DateTime.now()),
-                style: const TextStyle(fontSize: 12, color: AppColors.primary),
-              ),
-              backgroundColor: AppColors.primarySurface,
-            ),
-          ),
-        ],
-      ),
       body: RefreshIndicator(
         color: AppColors.primary,
         onRefresh: () async {

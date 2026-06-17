@@ -4,10 +4,10 @@ class AppColors {
   AppColors._();
 
   // Primary purple palette
-  static const Color primary = Color(0xFF6C3FC5);
-  static const Color primaryLight = Color(0xFF8B5CF6);
-  static const Color primaryDark = Color(0xFF4C2D8F);
-  static const Color primarySurface = Color(0xFFF3EEFF);
+  static const Color primary = Color(0xFF6D3FC8);
+  static const Color primaryLight = Color(0xFF8D5CF6);
+  static const Color primaryDark = Color(0xFF45227E);
+  static const Color primarySurface = Color(0xFFF2ECFF);
 
   // Accent
   static const Color accent = Color(0xFFB083F0);
@@ -15,14 +15,14 @@ class AppColors {
 
   // Neutrals
   static const Color white = Color(0xFFFFFFFF);
-  static const Color background = Color(0xFFF8F7FC);
+  static const Color background = Color(0xFFFAF8FD);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color cardBorder = Color(0xFFEDE9F8);
+  static const Color cardBorder = Color(0xFFEAE5F4);
 
   // Text
-  static const Color textPrimary = Color(0xFF1A1035);
-  static const Color textSecondary = Color(0xFF6B7280);
-  static const Color textHint = Color(0xFFADA8C3);
+  static const Color textPrimary = Color(0xFF181125);
+  static const Color textSecondary = Color(0xFF667085);
+  static const Color textHint = Color(0xFF9CA3AF);
 
   // Status
   static const Color success = Color(0xFF22C55E);
@@ -44,8 +44,8 @@ class AppColors {
   static const Color statusCancelled = Color(0xFFEF4444);
 
   // Divider & border
-  static const Color divider = Color(0xFFEDE9F8);
-  static const Color border = Color(0xFFE5E0F5);
+  static const Color divider = Color(0xFFEAE5F4);
+  static const Color border = Color(0xFFE7E1F2);
 
   // Gradient
   static const LinearGradient primaryGradient = LinearGradient(

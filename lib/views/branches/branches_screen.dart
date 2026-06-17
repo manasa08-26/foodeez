@@ -29,6 +29,7 @@ class BranchesScreen extends ConsumerWidget {
         label: const Text('Add Branch'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       body: branchesAsync.when(
         loading: () => const FullPageLoader(),
@@ -49,7 +50,7 @@ class BranchesScreen extends ConsumerWidget {
                 onRefresh: () =>
                     ref.refresh(branchesProvider(restaurantId).future),
                 child: ListView.separated(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 104),
                   itemCount: branches.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (_, i) {
@@ -57,11 +58,18 @@ class BranchesScreen extends ConsumerWidget {
                     return GestureDetector(
                       onTap: () => context.go('/branches/${b.id}'),
                       child: Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(17),
                         decoration: BoxDecoration(
                           color: AppColors.white,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(22),
                           border: Border.all(color: AppColors.cardBorder),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.035),
+                              blurRadius: 18,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,11 +77,11 @@ class BranchesScreen extends ConsumerWidget {
                             Row(
                               children: [
                                 Container(
-                                  width: 44,
-                                  height: 44,
+                                  width: 46,
+                                  height: 46,
                                   decoration: BoxDecoration(
                                     color: AppColors.primarySurface,
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: const Icon(
                                     Icons.store_mall_directory_rounded,
@@ -90,8 +98,10 @@ class BranchesScreen extends ConsumerWidget {
                                       Text(
                                         b.name,
                                         style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16,
+                                          height: 1.15,
+                                          letterSpacing: -0.35,
+                                          fontWeight: FontWeight.w900,
                                         ),
                                       ),
                                       if (b.city != null)
@@ -102,6 +112,7 @@ class BranchesScreen extends ConsumerWidget {
                                           style: const TextStyle(
                                             fontSize: 12,
                                             color: AppColors.textSecondary,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                     ],
@@ -168,10 +179,10 @@ class _Action extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: AppColors.primarySurface,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(999),
         ),
         child: Row(
           children: [
@@ -180,7 +191,7 @@ class _Action extends StatelessWidget {
             Text(label,
                 style: const TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w800,
                     color: AppColors.primary)),
           ],
         ),
@@ -202,7 +213,7 @@ class _OnlineToggle extends ConsumerWidget {
           b.isOnline ? 'Online' : 'Offline',
           style: TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w800,
             color: b.isOnline ? AppColors.success : AppColors.textSecondary,
           ),
         ),

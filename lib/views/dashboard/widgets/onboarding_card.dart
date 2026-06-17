@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 
 class OnboardingCard extends StatelessWidget {
@@ -25,33 +24,47 @@ class OnboardingCard extends StatelessWidget {
     final leadStatus = data['leadStatus']?.toString() ?? '';
     final restaurantName =
         data['restaurantName']?.toString() ?? data['name']?.toString() ?? '';
-    final restaurantId =
-        data['restaurantId']?.toString() ?? data['id']?.toString();
-
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.cardBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.035),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             const Icon(Icons.checklist_rounded,
                 color: AppColors.primary, size: 18),
             const SizedBox(width: 8),
             const Text('Onboarding Progress',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontSize: 16,
+                    letterSpacing: -0.25,
+                    fontWeight: FontWeight.w900)),
           ]),
           const SizedBox(height: 12),
           if (restaurantName.isNotEmpty)
             Text(restaurantName,
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                style: const TextStyle(
+                    fontSize: 15,
+                    letterSpacing: -0.2,
+                    fontWeight: FontWeight.w800)),
           const SizedBox(height: 10),
           Row(children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(999),
                 child: LinearProgressIndicator(
                   value: progress,
-                  minHeight: 8,
+                  minHeight: 9,
                   backgroundColor: AppColors.primarySurface,
                   valueColor:
                       const AlwaysStoppedAnimation<Color>(AppColors.primary),
@@ -61,13 +74,15 @@ class OnboardingCard extends StatelessWidget {
             const SizedBox(width: 12),
             Text('$pct%',
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold, color: AppColors.primary)),
+                    fontWeight: FontWeight.w900, color: AppColors.primary)),
           ]),
           const SizedBox(height: 6),
           Text(
             '$pct% complete${leadStatus.isNotEmpty ? ' · $leadStatus' : ''}',
-            style:
-                const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+            style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600),
           ),
           // if (progress < 1.0) ...[
           //   const SizedBox(height: 12),

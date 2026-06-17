@@ -29,14 +29,13 @@ class OrdersScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Orders')),
       body: Column(
         children: [
           // Status filter chips
           SizedBox(
-            height: 48,
+            height: 54,
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
               scrollDirection: Axis.horizontal,
               itemCount: _statuses.length,
               separatorBuilder: (_, __) => const SizedBox(width: 8),
@@ -53,10 +52,10 @@ class OrdersScreen extends ConsumerWidget {
                   selectedColor: AppColors.primary,
                   checkmarkColor: Colors.white,
                   labelStyle: TextStyle(
-                    color: isSelected
-                        ? Colors.white
-                        : AppColors.textSecondary,
-                    fontSize: 13,
+                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.1,
                   ),
                   backgroundColor: AppColors.white,
                   side: BorderSide(
@@ -84,25 +83,32 @@ class OrdersScreen extends ConsumerWidget {
                       color: AppColors.primary,
                       onRefresh: () => ref.refresh(ordersProvider.future),
                       child: ListView.separated(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 104),
                         itemCount: orders.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 12),
                         itemBuilder: (_, i) {
                           final order = orders[i];
                           return GestureDetector(
-                            onTap: () =>
-                                context.go('/orders/${order.id}'),
+                            onTap: () => context.go('/orders/${order.id}'),
                             child: Container(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(17),
                               decoration: BoxDecoration(
                                 color: AppColors.white,
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(22),
                                 border: Border.all(
                                   color: order.isPending
                                       ? AppColors.warning
                                       : AppColors.cardBorder,
-                                  width: order.isPending ? 2 : 1,
+                                  width: order.isPending ? 1.4 : 1,
                                 ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        Colors.black.withValues(alpha: 0.035),
+                                    blurRadius: 18,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,8 +123,10 @@ class OrdersScreen extends ConsumerWidget {
                                             Text(
                                               '#${order.orderNumber}',
                                               style: const TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w700,
+                                                fontSize: 16,
+                                                height: 1.15,
+                                                letterSpacing: -0.35,
+                                                fontWeight: FontWeight.w900,
                                               ),
                                             ),
                                             if (order.customerName != null)
@@ -126,6 +134,7 @@ class OrdersScreen extends ConsumerWidget {
                                                 order.customerName!,
                                                 style: const TextStyle(
                                                   fontSize: 13,
+                                                  fontWeight: FontWeight.w600,
                                                   color:
                                                       AppColors.textSecondary,
                                                 ),
@@ -145,6 +154,7 @@ class OrdersScreen extends ConsumerWidget {
                                               '${item.name} ×${item.quantity}',
                                               style: const TextStyle(
                                                   fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
                                                   color:
                                                       AppColors.textSecondary),
                                             ))
@@ -156,27 +166,26 @@ class OrdersScreen extends ConsumerWidget {
                                       Text(
                                         AppFormatters.currency(order.total),
                                         style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: -0.4,
                                           color: AppColors.primary,
                                         ),
                                       ),
                                       const Spacer(),
                                       const Icon(Icons.access_time_rounded,
-                                          size: 12,
-                                          color: AppColors.textHint),
+                                          size: 12, color: AppColors.textHint),
                                       const SizedBox(width: 4),
                                       Text(
                                         timeago.format(order.createdAt),
                                         style: const TextStyle(
-                                            fontSize: 12,
+                                            fontSize: 11.5,
+                                            fontWeight: FontWeight.w600,
                                             color: AppColors.textHint),
                                       ),
                                       const SizedBox(width: 4),
-                                      const Icon(
-                                          Icons.chevron_right_rounded,
-                                          color: AppColors.textHint,
-                                          size: 18),
+                                      const Icon(Icons.chevron_right_rounded,
+                                          color: AppColors.textHint, size: 18),
                                     ],
                                   ),
                                 ],

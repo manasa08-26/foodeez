@@ -17,42 +17,57 @@ class BranchStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final numVal =
-        (value is num) ? value as num : (int.tryParse(value?.toString() ?? '') ?? 0);
-    return Card(
-      shape: highlight
-          ? RoundedRectangleBorder(
-              side: BorderSide(color: AppColors.warning, width: 2),
-              borderRadius: BorderRadius.circular(12))
-          : null,
-      elevation: highlight ? 6 : 2,
+    final numVal = (value is num)
+        ? value as num
+        : (int.tryParse(value?.toString() ?? '') ?? 0);
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: highlight ? AppColors.warning : AppColors.cardBorder,
+          width: highlight ? 1.4 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: highlight ? 0.08 : 0.035),
+            blurRadius: highlight ? 22 : 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(17),
         child: Row(children: [
           if (icon != null)
             Container(
               decoration: BoxDecoration(
                 color: AppColors.primarySurface,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(14),
               ),
               padding: const EdgeInsets.all(10),
-              child: Icon(icon, color: AppColors.primary),
+              child: Icon(icon, color: AppColors.primary, size: 21),
             ),
           if (icon != null) const SizedBox(width: 12),
           Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
                 label.toUpperCase(),
                 style: const TextStyle(
-                    letterSpacing: 1.2,
+                    letterSpacing: 0.7,
                     color: AppColors.textSecondary,
-                    fontSize: 12),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 11),
               ),
               const SizedBox(height: 6),
               Text(
                 numVal.toString(),
                 style: const TextStyle(
-                    fontSize: 28, fontWeight: FontWeight.bold),
+                    fontSize: 29,
+                    height: 1,
+                    letterSpacing: -0.9,
+                    fontWeight: FontWeight.w900),
               ),
             ]),
           ),

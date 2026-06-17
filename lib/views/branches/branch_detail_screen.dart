@@ -10,7 +10,7 @@ class BranchDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Branch')),
+      // appBar: AppBar(title: const Text('Branch')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -85,8 +85,7 @@ class _TileAction extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
-                color: AppColors.textHint),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
           ],
         ),
       ),

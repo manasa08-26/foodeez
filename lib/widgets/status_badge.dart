@@ -11,17 +11,20 @@ class StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (color, bg, label) = _resolve(status.toUpperCase());
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.14)),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: fontSize,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w800,
           color: color,
+          letterSpacing: -0.1,
+          height: 1,
         ),
       ),
     );
@@ -59,11 +62,7 @@ class StatusBadge extends StatelessWidget {
         'PENDING' => (AppColors.warning, AppColors.warningSurface, 'Pending'),
         'REJECTED' => (AppColors.error, AppColors.errorSurface, 'Rejected'),
         'ACTIVE' => (AppColors.success, AppColors.successSurface, 'Active'),
-        'INACTIVE' => (
-            AppColors.textSecondary,
-            AppColors.border,
-            'Inactive'
-          ),
+        'INACTIVE' => (AppColors.textSecondary, AppColors.border, 'Inactive'),
         _ => (AppColors.textSecondary, AppColors.border, s),
       };
 }

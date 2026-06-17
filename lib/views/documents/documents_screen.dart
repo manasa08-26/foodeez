@@ -33,17 +33,29 @@ class DocumentsScreen extends ConsumerWidget {
       //appBar: AppBar(title: const Text('Documents')),
       body: docsAsync.when(
         loading: () => const FullPageLoader(),
-        error: (e, _) => ErrorView(message: e.toString()),
+        error: (e, _) => ErrorView(
+          message: 'Unable to load documents\n${e.toString()}',
+          onRetry: () => ref.invalidate(documentsProvider(restaurantId)),
+        ),
         data: (docs) => ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 104),
           children: [
+            const Text(
+              'Upload and track required restaurant verification files.',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 16),
             // Info banner
             Container(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(15),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 color: AppColors.primarySurface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(18),
               ),
               child: const Row(
                 children: [
@@ -52,7 +64,10 @@ class DocumentsScreen extends ConsumerWidget {
                   Expanded(
                     child: Text(
                       'Documents are verified by our team. Upload clear images.',
-                      style: TextStyle(fontSize: 13, color: AppColors.primary),
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary),
                     ),
                   ),
                 ],
@@ -104,7 +119,9 @@ class _DocumentCard extends ConsumerWidget {
     );
     if (result == null ||
         result.files.isEmpty ||
-        result.files.first.path == null) return;
+        result.files.first.path == null) {
+      return;
+    }
 
     final ok = await ref.read(documentUploadProvider.notifier).upload(
           restaurantId,
@@ -130,10 +147,10 @@ class _DocumentCard extends ConsumerWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(17),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: doc.isVerified
               ? AppColors.success.withValues(alpha: 0.4)
@@ -141,6 +158,13 @@ class _DocumentCard extends ConsumerWidget {
                   ? AppColors.error.withValues(alpha: 0.4)
                   : AppColors.cardBorder,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.035),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -153,7 +177,7 @@ class _DocumentCard extends ConsumerWidget {
                   : doc.isRejected
                       ? AppColors.errorSurface
                       : AppColors.primarySurface,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
               Icons.description_outlined,
@@ -172,7 +196,9 @@ class _DocumentCard extends ConsumerWidget {
               children: [
                 Text(label,
                     style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w600)),
+                        fontSize: 15,
+                        letterSpacing: -0.2,
+                        fontWeight: FontWeight.w900)),
                 const SizedBox(height: 2),
                 if (isUploaded)
                   StatusBadge(status: doc.status)

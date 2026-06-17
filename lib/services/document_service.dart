@@ -16,8 +16,11 @@ class DocumentService {
     try {
       final res =
           await _dio.get(ApiEndpoints.restaurantDocuments(restaurantId));
-      final list = (res.data as List?) ?? [];
-      return list.map((e) => DocumentModel.fromJson(e)).toList();
+      final list = _toList(res.data);
+      return list
+          .whereType<Map>()
+          .map((e) => DocumentModel.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -33,9 +36,25 @@ class DocumentService {
       final res = await _dio.post(
           ApiEndpoints.restaurantDocuments(restaurantId),
           data: formData);
-      return DocumentModel.fromJson(res.data);
+      return DocumentModel.fromJson(_toMap(res.data));
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
+  }
+
+  static List _toList(dynamic data) {
+    if (data is List) return data;
+    if (data is Map) {
+      for (final key in ['documents', 'data', 'items', 'results', 'records']) {
+        if (data[key] is List) return data[key] as List;
+      }
+    }
+    return [];
+  }
+
+  static Map<String, dynamic> _toMap(dynamic data) {
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return Map<String, dynamic>.from(data);
+    return {};
   }
 }

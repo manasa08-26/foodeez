@@ -23,19 +23,24 @@ class DocumentModel {
 
   factory DocumentModel.fromJson(Map<String, dynamic> json) => DocumentModel(
         id: json['id']?.toString() ?? '',
-        restaurantId: json['restaurantId']?.toString() ?? '',
-        type: json['type'] ?? '',
-        status: json['status'] ?? 'PENDING',
-        fileUrl: json['fileUrl'],
-        rejectionReason: json['rejectionReason'],
+        restaurantId: json['restaurantId']?.toString() ??
+            (json['restaurant'] is Map
+                ? json['restaurant']['id']?.toString()
+                : null) ??
+            '',
+        type: (json['type'] ?? json['documentType'])?.toString() ?? '',
+        status: json['status']?.toString() ?? 'PENDING',
+        fileUrl: (json['fileUrl'] ?? json['url'] ?? json['filePath'])?.toString(),
+        rejectionReason: json['rejectionReason']?.toString(),
         expiryDate: json['expiryDate'] != null
-            ? DateTime.tryParse(json['expiryDate'])
+            ? DateTime.tryParse(json['expiryDate'].toString())
             : null,
         verifiedAt: json['verifiedAt'] != null
-            ? DateTime.tryParse(json['verifiedAt'])
+            ? DateTime.tryParse(json['verifiedAt'].toString())
             : null,
         createdAt:
-            DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+            DateTime.tryParse(json['createdAt']?.toString() ?? '') ??
+                DateTime.now(),
       );
 
   String get displayType => switch (type) {

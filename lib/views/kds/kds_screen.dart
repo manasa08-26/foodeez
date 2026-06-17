@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
@@ -89,44 +88,6 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        title: Row(children: [
-          const Icon(Icons.kitchen_rounded,
-              color: AppColors.textPrimary, size: 22),
-          const SizedBox(width: 8),
-          const Text('Kitchen Display',
-              style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 17)),
-          const SizedBox(width: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: activeOrders.isNotEmpty
-                  ? AppColors.cardBorder
-                  : AppColors.cardBorder,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '${activeOrders.length} active',
-              style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-        ]),
-        actions: [
-          IconButton(
-            icon:
-                const Icon(Icons.refresh_rounded, color: AppColors.textPrimary),
-            onPressed: () =>
-                ref.read(liveOrdersProvider.notifier).fetchOrders(),
-          ),
-        ],
-      ),
       body: kdsState.isLoading && kdsState.orders.isEmpty
           ? Center(
               child: CircularProgressIndicator(
