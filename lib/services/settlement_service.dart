@@ -12,20 +12,19 @@ class SettlementService {
   final Dio _dio;
   SettlementService(this._dio);
 
-  /// Fetches today's completed orders from the restaurant orders endpoint
-  /// and computes settlement summary from them.
-  Future<List<SettlementOrder>> getTodayOrders() async {
+  Future<SettlementSummary> getSummary(SettlementPeriod period) async {
     try {
-      final res = await _dio.get(
-        ApiEndpoints.restaurantOrders,
-        queryParameters: {
-          'status': 'DELIVERED',
-          'limit': 100,
-          'page': 1,
-        },
-      );
-      final list = _toList(res.data);
-      return list
+      final res = await _dio.get(ApiEndpoints.settlementSummary(period.apiPath));
+      return SettlementSummary.fromJson(_unwrapMap(res.data));
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<List<SettlementOrder>> getOrders(SettlementPeriod period) async {
+    try {
+      final res = await _dio.get(ApiEndpoints.settlementOrders(period.apiPath));
+      return _toList(res.data)
           .map((e) => SettlementOrder.fromJson(e as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {
@@ -33,38 +32,56 @@ class SettlementService {
     }
   }
 
-  Future<SettlementSummary> getTodaySummary() async {
-    final orders = await getTodayOrders();
-    final today = DateTime.now();
-    final todayOrders = orders.where((o) {
-      try {
-        final d = DateTime.parse(o.createdAt ?? '');
-        return d.year == today.year &&
-            d.month == today.month &&
-            d.day == today.day;
-      } catch (_) {
-        return true; // include if we can't parse date
+  Future<List<RecentPayout>> getRecentPayouts({int limit = 10}) async {
+    try {
+      final res = await _dio.get(
+        ApiEndpoints.settlementRecentPayouts,
+        queryParameters: {'limit': limit},
+      );
+      return _toList(res.data)
+          .map((e) => RecentPayout.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return [];
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<void> requestWithdraw() async {
+    try {
+      await _dio.post(ApiEndpoints.settlementWithdraw);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        throw ApiException('Withdraw is not available yet', statusCode: 404);
       }
-    }).toList();
+      throw ApiException.fromDioError(e);
+    }
+  }
 
-    final gross = todayOrders.fold<double>(0, (s, o) => s + o.total);
-    const platformFee = 0.05; // 5% platform fee
-    final fee = gross * platformFee;
-    final net = gross - fee;
-
-    return SettlementSummary(
-      grossRevenue: gross,
-      platformFee: fee,
-      netPayout: net,
-      totalOrders: todayOrders.length,
-      pendingOrders: 0,
-    );
+  static Map<String, dynamic> _unwrapMap(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      if (data['data'] is Map) {
+        return Map<String, dynamic>.from(data['data'] as Map);
+      }
+      if (data['summary'] is Map) {
+        return Map<String, dynamic>.from(data['summary'] as Map);
+      }
+      return data;
+    }
+    return {};
   }
 
   static List _toList(dynamic data) {
     if (data is List) return data;
     if (data is Map) {
-      for (final key in ['orders', 'data', 'items', 'results']) {
+      for (final key in [
+        'payouts',
+        'orders',
+        'data',
+        'items',
+        'results',
+        'records',
+      ]) {
         if (data[key] is List) return data[key] as List;
       }
     }

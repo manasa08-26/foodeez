@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import '../providers/auth_provider.dart';
+import '../providers/splash_provider.dart';
 import '../views/splash/splash_screen.dart';
 import '../views/auth/login_screen.dart';
 import '../views/auth/forgot_password_screen.dart';
@@ -24,23 +25,26 @@ import '../views/users/users_screen.dart';
 import '../widgets/shell_scaffold.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
-
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: '/splash',
     redirect: (context, state) {
+      final authState = ref.read(authProvider);
+      final splashReady = ref.read(splashReadyProvider);
       final isAuth = authState.isAuthenticated;
       final isLoading = authState.isLoading;
       final loc = state.matchedLocation;
-      final isPublic = loc == '/splash' ||
-          loc == '/login' ||
-          loc == '/forgot-password';
+      final isPublic =
+          loc == '/splash' || loc == '/login' || loc == '/forgot-password';
 
       debugPrint(
-          '[Router] redirect isAuth=$isAuth isLoading=$isLoading uri=${state.uri} matched=$loc');
+          '[Router] redirect isAuth=$isAuth isLoading=$isLoading splashReady=$splashReady uri=${state.uri} matched=$loc');
 
-      // Let splash handle its own navigation
-      if (loc == '/splash') return null;
+      // Splash is launch-only: wait for auth + minimum splash duration.
+      if (loc == '/splash') {
+        if (isLoading || !splashReady) return null;
+        return isAuth ? '/dashboard' : '/login';
+      }
+
       if (isLoading) return null;
       if (!isAuth && !isPublic) return '/login';
       if (isAuth && (loc == '/login' || loc == '/forgot-password')) {
@@ -183,4 +187,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  ref.listen(authProvider, (_, __) => router.refresh());
+  ref.listen(splashReadyProvider, (_, __) => router.refresh());
+  ref.onDispose(router.dispose);
+
+  return router;
 });

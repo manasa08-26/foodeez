@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../core/constants/app_assets.dart';
 import '../core/constants/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/branch_provider.dart';
@@ -94,30 +95,14 @@ class ShellScaffold extends ConsumerWidget {
                   : null,
       titleSpacing: isDashboard ? 4 : 0,
       title: isDashboard
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Foodeez',
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 20,
-                    height: 1.05,
-                    letterSpacing: -0.4,
-                  ),
-                ),
-                Text(
-                  'Restaurant admin',
-                  style: TextStyle(
-                    color: AppColors.textSecondary.withValues(alpha: 0.88),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 11,
-                    height: 1.15,
-                  ),
-                ),
-              ],
+          ? SizedBox(
+              height: 36,
+              width: 112,
+              child: Image.asset(
+                AppAssets.brandTap,
+                fit: BoxFit.contain,
+                alignment: Alignment.centerLeft,
+              ),
             )
           : Text(
               title,
@@ -135,7 +120,7 @@ class ShellScaffold extends ConsumerWidget {
                 color: AppColors.textPrimary, size: 23),
             onPressed: () {},
           ),
-        _HeaderOnlineSwitch(location: currentPath),
+        // _HeaderOnlineSwitch(location: currentPath),
         _ProfileMenu(ref: ref, user: user),
         const SizedBox(width: 8),
       ],
@@ -208,12 +193,12 @@ class _FooterNavigation extends StatelessWidget {
       icon: Icons.receipt_long_outlined,
       selectedIcon: Icons.receipt_long_rounded,
     ),
-    _FooterItem(
-      route: '/kds',
-      label: 'Kitchen',
-      icon: Icons.soup_kitchen_outlined,
-      selectedIcon: Icons.soup_kitchen_rounded,
-    ),
+    // _FooterItem(
+    //   route: '/kds',
+    //   label: 'Kitchen',
+    //   icon: Icons.soup_kitchen_outlined,
+    //   selectedIcon: Icons.soup_kitchen_rounded,
+    // ),
     _FooterItem(
       route: '/settlement',
       label: 'Payouts',

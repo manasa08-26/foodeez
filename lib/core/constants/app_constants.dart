@@ -19,6 +19,9 @@ class AppConstants {
   static const Duration kdsPollingInterval = Duration(seconds: 10);
   static const int orderAutoRejectSeconds = 90;
 
+  // Splash
+  static const Duration splashDuration = Duration(seconds: 15);
+
   // Allowed roles for this app
   static const String roleRestaurantAdmin = 'restaurant_admin';
   static const String roleRestaurantOwner = 'restaurant_owner';
@@ -96,6 +99,13 @@ class ApiEndpoints {
   static const String settlementToday = '/partner/settlement/today';
   static const String settlementTodayOrders =
       '/partner/settlement/today/orders';
+  static String settlementSummary(String period) =>
+      '/partner/settlement/$period';
+  static String settlementOrders(String period) =>
+      '/partner/settlement/$period/orders';
+  static const String settlementRecentPayouts =
+      '/partner/settlement/payouts';
+  static const String settlementWithdraw = '/partner/settlement/withdraw';
 
   // Dashboard
   static const String dashboard = '/dashboard';

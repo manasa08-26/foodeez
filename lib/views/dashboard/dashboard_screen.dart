@@ -238,15 +238,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ]),
 
         const SizedBox(height: 6),
-        if (restaurantName.isNotEmpty)
-          Text(
-            "Here's how $restaurantName is doing today.",
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
 
         // Active branch card inside hero
         if (branchName.isNotEmpty) ...[

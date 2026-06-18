@@ -1,65 +1,180 @@
+enum SettlementPeriod { today, week, month }
+
+extension SettlementPeriodApi on SettlementPeriod {
+  String get apiPath => switch (this) {
+        SettlementPeriod.today => 'today',
+        SettlementPeriod.week => 'week',
+        SettlementPeriod.month => 'month',
+      };
+
+  String get label => switch (this) {
+        SettlementPeriod.today => 'Today',
+        SettlementPeriod.week => 'Week',
+        SettlementPeriod.month => 'Month',
+      };
+
+  String get netPayoutTitle => switch (this) {
+        SettlementPeriod.today => "TODAY'S NET PAYOUT",
+        SettlementPeriod.week => "THIS WEEK'S NET PAYOUT",
+        SettlementPeriod.month => "THIS MONTH'S NET PAYOUT",
+      };
+
+  String get breakdownLabel => switch (this) {
+        SettlementPeriod.today => 'Today',
+        SettlementPeriod.week => 'This week',
+        SettlementPeriod.month => 'This month',
+      };
+}
+
 class SettlementSummary {
-  final double grossRevenue;
-  final double platformFee;
-  final double netPayout;
-  final int totalOrders;
-  final int pendingOrders;
+  final String? date;
+  final int orderCount;
+  final double totalItemValue;
+  final double totalCommission;
+  final double totalRestaurantShare;
+  final double taxesAndAdjustments;
+  final String? status;
+  final String? nextTransferAt;
 
   SettlementSummary({
-    required this.grossRevenue,
-    required this.platformFee,
-    required this.netPayout,
-    required this.totalOrders,
-    required this.pendingOrders,
+    this.date,
+    required this.orderCount,
+    required this.totalItemValue,
+    required this.totalCommission,
+    required this.totalRestaurantShare,
+    this.taxesAndAdjustments = 0,
+    this.status,
+    this.nextTransferAt,
   });
 
-  // Legacy fromJson kept for any server that returns the old shape
+  double get netPayout => totalRestaurantShare;
+  double get grossRevenue => totalItemValue;
+  double get platformFee => totalCommission;
+
+  double get platformFeeRate =>
+      totalItemValue > 0 ? (totalCommission / totalItemValue) * 100 : 0;
+
+  double get avgOrderValue =>
+      orderCount > 0 ? totalItemValue / orderCount : 0;
+
+  bool get isSettled =>
+      (status ?? '').toUpperCase() == 'SETTLED' || orderCount > 0;
+
   factory SettlementSummary.fromJson(Map<String, dynamic> json) =>
       SettlementSummary(
-        grossRevenue: _toDouble(json['grossRevenue'] ?? json['totalRevenue']),
-        platformFee: _toDouble(json['platformFee'] ?? json['platformCommission']),
-        netPayout: _toDouble(json['netPayout']),
-        totalOrders: _toInt(json['totalOrders']),
-        pendingOrders: _toInt(json['pendingOrders']),
+        date: json['date']?.toString(),
+        orderCount: _toInt(json['orderCount'] ?? json['totalOrders']),
+        totalItemValue: _toDouble(
+          json['totalItemValue'] ??
+              json['grossRevenue'] ??
+              json['totalRevenue'],
+        ),
+        totalCommission: _toDouble(
+          json['totalCommission'] ??
+              json['platformFee'] ??
+              json['platformCommission'],
+        ),
+        totalRestaurantShare: _toDouble(
+          json['totalRestaurantShare'] ??
+              json['netPayout'] ??
+              json['restaurantShare'],
+        ),
+        taxesAndAdjustments: _toDouble(
+          json['taxesAndAdjustments'] ??
+              json['taxes'] ??
+              json['adjustments'],
+        ),
+        status: json['status']?.toString(),
+        nextTransferAt: json['nextTransferAt']?.toString() ??
+            json['nextPayoutAt']?.toString(),
       );
 }
 
 class SettlementOrder {
   final String id;
   final String orderNumber;
-  final double total;
-  final double platformFee;
-  final double netAmount;
-  final String status;
-  final String? createdAt;
-  final String? customerName;
+  final double itemValue;
+  final double commission;
+  final double restaurantShare;
+  final String? commissionBand;
+  final bool capApplied;
+  final String? placedAt;
 
   SettlementOrder({
     required this.id,
     required this.orderNumber,
-    required this.total,
-    required this.platformFee,
-    required this.netAmount,
-    required this.status,
-    this.createdAt,
-    this.customerName,
+    required this.itemValue,
+    required this.commission,
+    required this.restaurantShare,
+    this.commissionBand,
+    this.capApplied = false,
+    this.placedAt,
   });
 
   factory SettlementOrder.fromJson(Map<String, dynamic> json) {
-    final total = _toDouble(json['total'] ?? json['orderTotal'] ?? json['totalAmount']);
-    const feeRate = 0.05;
+    final itemValue = _toDouble(
+      json['itemValue'] ?? json['total'] ?? json['orderTotal'],
+    );
+    final commission = _toDouble(json['commission'] ?? json['platformFee']);
+    final restaurantShare = _toDouble(
+      json['restaurantShare'] ?? json['netAmount'] ?? (itemValue - commission),
+    );
+
     return SettlementOrder(
-      id: json['id']?.toString() ?? json['orderId']?.toString() ?? '',
+      id: json['orderId']?.toString() ?? json['id']?.toString() ?? '',
       orderNumber:
-          json['orderNumber']?.toString() ?? json['id']?.toString() ?? '',
-      total: total,
-      platformFee: total * feeRate,
-      netAmount: total * (1 - feeRate),
-      status: json['status']?.toString() ?? '',
-      createdAt: json['createdAt']?.toString() ?? json['placedAt']?.toString(),
-      customerName: json['customerName']?.toString() ??
-          (json['customer'] is Map ? json['customer']['name'] : null)
-              ?.toString(),
+          json['orderNumber']?.toString() ?? json['orderId']?.toString() ?? '',
+      itemValue: itemValue,
+      commission: commission,
+      restaurantShare: restaurantShare,
+      commissionBand: json['commissionBand']?.toString(),
+      capApplied: json['capApplied'] == true,
+      placedAt: json['placedAt']?.toString() ?? json['createdAt']?.toString(),
+    );
+  }
+}
+
+class RecentPayout {
+  final String id;
+  final String reference;
+  final double amount;
+  final String status;
+  final String? paidAt;
+  final String? bankName;
+  final String? accountLast4;
+
+  RecentPayout({
+    required this.id,
+    required this.reference,
+    required this.amount,
+    required this.status,
+    this.paidAt,
+    this.bankName,
+    this.accountLast4,
+  });
+
+  bool get isPaid => status.toUpperCase() == 'PAID';
+
+  factory RecentPayout.fromJson(Map<String, dynamic> json) {
+    final account = json['bankAccountNumber']?.toString() ??
+        json['accountNumber']?.toString() ??
+        json['accountLast4']?.toString();
+
+    return RecentPayout(
+      id: json['id']?.toString() ?? json['payoutId']?.toString() ?? '',
+      reference: json['reference']?.toString() ??
+          json['payoutNumber']?.toString() ??
+          json['id']?.toString() ??
+          '',
+      amount: _toDouble(json['amount'] ?? json['netAmount'] ?? json['payout']),
+      status: json['status']?.toString() ?? 'PAID',
+      paidAt: json['paidAt']?.toString() ??
+          json['createdAt']?.toString() ??
+          json['transferDate']?.toString(),
+      bankName: json['bankName']?.toString(),
+      accountLast4: account != null && account.length >= 4
+          ? account.substring(account.length - 4)
+          : account,
     );
   }
 }

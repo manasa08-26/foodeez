@@ -1,7 +1,10 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../providers/auth_provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../core/constants/app_assets.dart';
+import '../../core/constants/app_colors.dart';
+import '../../widgets/auth_screen_background.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -11,175 +14,384 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _fade;
-  late final Animation<double> _scale;
+    with TickerProviderStateMixin {
+  late final AnimationController _enterCtrl;
+  late final AnimationController _orbitCtrl;
+  late final AnimationController _progressCtrl;
+
+  late final Animation<double> _logoFade;
+  late final Animation<double> _logoScale;
+  late final Animation<Offset> _textSlide;
+  late final Animation<double> _textFade;
+  late final Animation<double> _bottomFade;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 900));
-    _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
-    _scale = Tween<double>(begin: 0.75, end: 1.0)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack));
-    _ctrl.forward();
+    _enterCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
+    _orbitCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10),
+    )..repeat();
+    _progressCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat();
 
-    // Navigate once auth state is known (not loading)
-    WidgetsBinding.instance.addPostFrameCallback((_) => _waitAndNavigate());
-  }
+    _logoFade = CurvedAnimation(
+      parent: _enterCtrl,
+      curve: const Interval(0.0, 0.55, curve: Curves.easeOut),
+    );
+    _logoScale = Tween<double>(begin: 0.82, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _enterCtrl,
+        curve: const Interval(0.0, 0.65, curve: Curves.easeOutBack),
+      ),
+    );
+    _textSlide = Tween<Offset>(
+      begin: const Offset(0, 0.18),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _enterCtrl,
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
+      ),
+    );
+    _textFade = CurvedAnimation(
+      parent: _enterCtrl,
+      curve: const Interval(0.25, 0.85, curve: Curves.easeOut),
+    );
+    _bottomFade = CurvedAnimation(
+      parent: _enterCtrl,
+      curve: const Interval(0.55, 1.0, curve: Curves.easeOut),
+    );
 
-  Future<void> _waitAndNavigate() async {
-    // Minimum splash time so the animation is visible
-    await Future.delayed(const Duration(milliseconds: 1600));
-    if (!mounted) return;
-
-    final auth = ref.read(authProvider);
-    if (auth.isLoading) {
-      // Wait a bit more if still loading
-      await Future.delayed(const Duration(milliseconds: 800));
-      if (!mounted) return;
-    }
-
-    final isAuth = ref.read(authProvider).isAuthenticated;
-    if (mounted) {
-      context.go(isAuth ? '/dashboard' : '/login');
-    }
+    _enterCtrl.forward();
   }
 
   @override
   void dispose() {
-    _ctrl.dispose();
+    _enterCtrl.dispose();
+    _orbitCtrl.dispose();
+    _progressCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1F0B3A), Color(0xFF4C2D8F), Color(0xFF6C3FC5)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      backgroundColor: AppColors.white,
+      body: AuthScreenBackground(
+        showDotGrid: true,
+        child: SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 18),
+              FadeTransition(
+                opacity: _textFade,
+                child: const _PartnerPortalBadge(),
+              ),
+              const Spacer(),
+              FadeTransition(
+                opacity: _logoFade,
+                child: ScaleTransition(
+                  scale: _logoScale,
+                  child: SizedBox(
+                    width: 220,
+                    height: 220,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        AnimatedBuilder(
+                          animation: _orbitCtrl,
+                          builder: (_, __) => CustomPaint(
+                            size: const Size(220, 220),
+                            painter: _OrbitRingsPainter(
+                              rotation: _orbitCtrl.value * 2 * math.pi,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 118,
+                          height: 118,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    AppColors.primary.withValues(alpha: 0.14),
+                                blurRadius: 30,
+                                offset: const Offset(0, 12),
+                              ),
+                            ],
+                          ),
+                          child: Image.asset(
+                            AppAssets.profileLogo,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+              SlideTransition(
+                position: _textSlide,
+                child: FadeTransition(
+                  opacity: _textFade,
+                  child: Column(
+                    children: [
+                      Text(
+                        'FooDeeZ',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                          letterSpacing: -1,
+                          height: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'RESTAURANT PARTNER PORTAL',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primary.withValues(alpha: 0.62),
+                          letterSpacing: 2.8,
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      RichText(
+                        text: TextSpan(
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textPrimary,
+                            letterSpacing: -0.6,
+                            height: 1.1,
+                          ),
+                          children: const [
+                            TextSpan(text: 'Tap. '),
+                            TextSpan(
+                              text: 'Eat.',
+                              style: TextStyle(color: AppColors.primary),
+                            ),
+                            TextSpan(text: ' Repeat.'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Order in seconds · Delivered fast',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Spacer(),
+              FadeTransition(
+                opacity: _bottomFade,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: 180,
+                      height: 4,
+                      child: AnimatedBuilder(
+                        animation: _progressCtrl,
+                        builder: (_, __) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(99),
+                            child: Stack(
+                              children: [
+                                Container(
+                                  color:
+                                      AppColors.primary.withValues(alpha: 0.12),
+                                ),
+                                FractionallySizedBox(
+                                  widthFactor: 0.35 +
+                                      (_progressCtrl.value * 0.55),
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                      gradient: AppColors.primaryGradient,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'READY TO SERVE',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary.withValues(alpha: 0.7),
+                        letterSpacing: 2.4,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: const [
+                          _FeatureChip(label: '👇 Tap to order'),
+                          _FeatureChip(label: '🍔 Your favourites'),
+                          _FeatureChip(label: '🛵 Fast delivery'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+            ],
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(flex: 3),
-
-            // Logo with fade + scale animation
-            FadeTransition(
-              opacity: _fade,
-              child: ScaleTransition(
-                scale: _scale,
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 140,
-                  height: 140,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            // App name
-            FadeTransition(
-              opacity: _fade,
-              child: const Text(
-                'Foodeez',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 34,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 2,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            FadeTransition(
-              opacity: _fade,
-              child: const Text(
-                'Restaurant Admin',
-                style: TextStyle(
-                  color: Colors.white60,
-                  fontSize: 14,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-
-            const Spacer(flex: 3),
-
-            // Loading dots
-            FadeTransition(
-              opacity: _fade,
-              child: const _PulsingDots(),
-            ),
-
-            const SizedBox(height: 40),
-          ],
         ),
       ),
     );
   }
 }
 
-class _PulsingDots extends StatefulWidget {
-  const _PulsingDots();
-
-  @override
-  State<_PulsingDots> createState() => _PulsingDotsState();
-}
-
-class _PulsingDotsState extends State<_PulsingDots>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 900))
-      ..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+class _PartnerPortalBadge extends StatelessWidget {
+  const _PartnerPortalBadge();
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _ctrl,
-      builder: (_, __) => Row(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppColors.white.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(99),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.18)),
+      ),
+      child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: List.generate(3, (i) {
-          // Stagger each dot by 0.33 of the animation cycle
-          final offset = (i / 3.0);
-          final phase = (_ctrl.value + offset) % 1.0;
-          final opacity = (phase < 0.5 ? phase * 2 : (1.0 - phase) * 2)
-              .clamp(0.25, 1.0)
-              .toDouble();
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: opacity),
+        children: [
+          Container(
+            width: 7,
+            height: 7,
+            decoration: const BoxDecoration(
+              color: AppColors.primary,
               shape: BoxShape.circle,
             ),
-          );
-        }),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'PARTNER PORTAL',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
+              letterSpacing: 1.8,
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+class _FeatureChip extends StatelessWidget {
+  const _FeatureChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(99),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.16)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 11.5,
+          fontWeight: FontWeight.w700,
+          color: AppColors.primary,
+        ),
+      ),
+    );
+  }
+}
+
+class _OrbitRingsPainter extends CustomPainter {
+  _OrbitRingsPainter({required this.rotation});
+
+  final double rotation;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final ringPaint = Paint()
+      ..color = AppColors.primary.withValues(alpha: 0.12)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+
+    for (final radius in [92.0, 104.0]) {
+      _drawDashedCircle(canvas, center, radius, ringPaint);
+    }
+
+    final dotPaint = Paint()
+      ..color = AppColors.primary
+      ..style = PaintingStyle.fill;
+
+    final radii = [92.0, 104.0, 98.0];
+    for (var i = 0; i < radii.length; i++) {
+      final angle = rotation + (i * 2 * math.pi / 3);
+      final r = radii[i];
+      final dot = Offset(
+        center.dx + r * math.cos(angle),
+        center.dy + r * math.sin(angle),
+      );
+      canvas.drawCircle(dot, i == 1 ? 5 : 4, dotPaint);
+    }
+  }
+
+  void _drawDashedCircle(
+    Canvas canvas,
+    Offset center,
+    double radius,
+    Paint paint,
+  ) {
+    const dash = 5.0;
+    const gap = 7.0;
+    final circumference = 2 * math.pi * radius;
+    final count = circumference / (dash + gap);
+    for (var i = 0; i < count; i++) {
+      final start = (i * (dash + gap)) / radius;
+      final sweep = dash / radius;
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        start,
+        sweep,
+        false,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _OrbitRingsPainter oldDelegate) =>
+      oldDelegate.rotation != rotation;
 }
