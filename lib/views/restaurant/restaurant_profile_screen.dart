@@ -38,7 +38,6 @@ class _RestaurantProfileScreenState
     for (final f in _fields) {
       _ctrls[f.$1] = TextEditingController();
     }
-
   }
 
   @override
@@ -102,7 +101,7 @@ class _RestaurantProfileScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Restaurant Profile'),
+        //   title: const Text('Restaurant Profile'),
         actions: [
           if (!_isEditing)
             IconButton(

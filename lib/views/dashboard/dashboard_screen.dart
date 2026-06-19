@@ -389,22 +389,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ]),
             const SizedBox(height: 8),
             // Toggle: switch between showing all branches and only online branches
-            Row(children: [
-              Switch.adaptive(
-                value: _branchFilter == 'online',
-                activeThumbColor: const Color(0xFFF0C35A),
-                onChanged: (v) {
-                  setState(() => _branchFilter = v ? 'online' : 'all');
-                },
-              ),
-              const SizedBox(width: 6),
-              Text(
-                _branchFilter == 'online'
-                    ? 'Showing online branches'
-                    : 'Showing all branches',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-              ),
-            ]),
           ]),
         ]),
         GestureDetector(

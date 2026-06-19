@@ -36,7 +36,8 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
     if (!SettlementStaticData.useLiveApis) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Withdraw will be available once the payouts API is live.'),
+          content:
+              Text('Withdraw will be available once the payouts API is live.'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -492,9 +493,8 @@ class _NetPayoutHeroCard extends StatelessWidget {
       final now = DateTime.now();
       final tomorrow = DateTime(now.year, now.month, now.day + 1);
       final day = DateTime(dt.year, dt.month, dt.day);
-      final label = day == tomorrow
-          ? 'Tomorrow'
-          : DateFormat('EEE, d MMM').format(dt);
+      final label =
+          day == tomorrow ? 'Tomorrow' : DateFormat('EEE, d MMM').format(dt);
       return '$label, ${DateFormat('h:mm a').format(dt)}';
     } catch (_) {
       return iso;
@@ -912,8 +912,7 @@ class _RecentPayoutTile extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: AppColors.successSurface,
                   borderRadius: BorderRadius.circular(99),

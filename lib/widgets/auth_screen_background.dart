@@ -13,40 +13,42 @@ class AuthScreenBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFFF3ECFF),
-            Color(0xFFFAF7FF),
-            Color(0xFFFFFFFF),
-          ],
-          stops: [0.0, 0.45, 1.0],
+    return SizedBox.expand(
+      child: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFF3ECFF),
+              Color(0xFFFAF7FF),
+              Color(0xFFFFFFFF),
+            ],
+            stops: [0.0, 0.45, 1.0],
+          ),
         ),
-      ),
-      child: Stack(
-        children: [
-          if (showDotGrid) const Positioned.fill(child: _DotGridPattern()),
-          Positioned(
-            top: -90,
-            right: -70,
-            child: _GlowOrb(
-              size: 240,
-              color: AppColors.primary.withValues(alpha: 0.09),
+        child: Stack(
+          children: [
+            if (showDotGrid) const Positioned.fill(child: _DotGridPattern()),
+            Positioned(
+              top: -90,
+              right: -70,
+              child: _GlowOrb(
+                size: 240,
+                color: AppColors.primary.withValues(alpha: 0.09),
+              ),
             ),
-          ),
-          Positioned(
-            bottom: -80,
-            left: -50,
-            child: _GlowOrb(
-              size: 200,
-              color: AppColors.accent.withValues(alpha: 0.1),
+            Positioned(
+              bottom: -80,
+              left: -50,
+              child: _GlowOrb(
+                size: 200,
+                color: AppColors.accent.withValues(alpha: 0.1),
+              ),
             ),
-          ),
-          child,
-        ],
+            child,
+          ],
+        ),
       ),
     );
   }

@@ -37,7 +37,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Order Detail')),
+      // appBar: AppBar(title: const Text('Order Detail')),
       body: orderAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(message: e.toString()),
@@ -201,14 +201,12 @@ class _PriceSummary extends StatelessWidget {
       child: Column(
         children: [
           _PriceRow('Subtotal', AppFormatters.currency(order.subtotal)),
-          _PriceRow(
-              'Delivery Fee', AppFormatters.currency(order.deliveryFee)),
+          _PriceRow('Delivery Fee', AppFormatters.currency(order.deliveryFee)),
           if (order.discount > 0)
             _PriceRow('Discount', '-${AppFormatters.currency(order.discount)}',
                 color: AppColors.success),
           const Divider(height: 16),
-          _PriceRow('Total', AppFormatters.currency(order.total),
-              isBold: true),
+          _PriceRow('Total', AppFormatters.currency(order.total), isBold: true),
         ],
       ),
     );
@@ -240,8 +238,7 @@ class _StatusActions extends StatelessWidget {
                   final confirmed = await showConfirmationDialog(
                     context,
                     title: 'Reject Order',
-                    message:
-                        'Are you sure you want to reject this order?',
+                    message: 'Are you sure you want to reject this order?',
                     confirmLabel: 'Reject',
                     isDanger: true,
                   );
@@ -328,15 +325,15 @@ class _PriceRow extends StatelessWidget {
   final String value;
   final bool isBold;
   final Color? color;
-  const _PriceRow(this.label, this.value,
-      {this.isBold = false, this.color});
+  const _PriceRow(this.label, this.value, {this.isBold = false, this.color});
 
   @override
   Widget build(BuildContext context) {
     final style = TextStyle(
       fontSize: isBold ? 15 : 13,
       fontWeight: isBold ? FontWeight.w700 : FontWeight.w400,
-      color: color ?? (isBold ? AppColors.textPrimary : AppColors.textSecondary),
+      color:
+          color ?? (isBold ? AppColors.textPrimary : AppColors.textSecondary),
     );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
