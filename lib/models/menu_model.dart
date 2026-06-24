@@ -17,6 +17,16 @@ class MenuCategory {
     this.items = const [],
   });
 
+  MenuCategory copyWith({List<MenuItem>? items}) => MenuCategory(
+        id: id,
+        branchId: branchId,
+        name: name,
+        displayName: displayName,
+        isVisible: isVisible,
+        sortOrder: sortOrder,
+        items: items ?? this.items,
+      );
+
   factory MenuCategory.fromJson(Map<String, dynamic> json) => MenuCategory(
         id: json['id']?.toString() ?? '',
         branchId: json['branchId']?.toString() ?? '',
@@ -34,6 +44,47 @@ class MenuCategory {
   int get visibleItemCount => items.where((i) => i.isVisible).length;
 }
 
+class MenuPricingRule {
+  final String id;
+  final String ruleType;
+  final String valueType;
+  final double value;
+  final String? title;
+  final String? startsAt;
+  final String? endsAt;
+  final bool isActive;
+
+  const MenuPricingRule({
+    required this.id,
+    required this.ruleType,
+    required this.valueType,
+    required this.value,
+    this.title,
+    this.startsAt,
+    this.endsAt,
+    this.isActive = true,
+  });
+
+  factory MenuPricingRule.fromJson(Map<String, dynamic> json) => MenuPricingRule(
+        id: json['id']?.toString() ?? '',
+        ruleType: json['ruleType']?.toString() ?? 'DISCOUNT',
+        valueType: json['valueType']?.toString() ?? 'PERCENTAGE',
+        value: _toDouble(json['value']),
+        title: json['title']?.toString(),
+        startsAt: json['startsAt']?.toString(),
+        endsAt: json['endsAt']?.toString(),
+        isActive: _toBool(json['isActive'], fallback: true),
+      );
+
+  Map<String, dynamic> toDiscountPayload() => {
+        'valueType': valueType,
+        'value': value,
+        if (title != null && title!.isNotEmpty) 'title': title,
+        if (startsAt != null && startsAt!.isNotEmpty) 'startsAt': startsAt,
+        if (endsAt != null && endsAt!.isNotEmpty) 'endsAt': endsAt,
+      };
+}
+
 class MenuItem {
   final String id;
   final String categoryId;
@@ -45,6 +96,7 @@ class MenuItem {
   final bool isInStock;
   final String? imageUrl;
   final List<MenuAddon> addons;
+  final List<MenuPricingRule> pricingRules;
 
   MenuItem({
     required this.id,
@@ -57,24 +109,59 @@ class MenuItem {
     this.isInStock = true,
     this.imageUrl,
     this.addons = const [],
+    this.pricingRules = const [],
   });
 
-  factory MenuItem.fromJson(Map<String, dynamic> json) => MenuItem(
-        id: json['id']?.toString() ?? '',
-        categoryId: json['categoryId']?.toString() ?? '',
-        name: json['name']?.toString() ?? '',
-        description: json['description']?.toString(),
-        price: _toDouble(json['price']),
-        currency: json['currency']?.toString() ?? 'INR',
-        isVisible: _toBool(json['isVisible'], fallback: true),
-        isInStock: _toBool(json['isInStock'], fallback: true),
-        imageUrl: json['imageUrl']?.toString(),
-        addons: (json['addons'] as List?)
-                ?.whereType<Map>()
-                .map((e) => MenuAddon.fromJson(Map<String, dynamic>.from(e)))
-                .toList() ??
-            [],
-      );
+  factory MenuItem.fromJson(Map<String, dynamic> json) {
+    final category = json['category'];
+    final categoryId = json['categoryId']?.toString() ??
+        (category is Map ? category['id']?.toString() : null) ??
+        '';
+
+    return MenuItem(
+      id: json['id']?.toString() ?? '',
+      categoryId: categoryId,
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString(),
+      price: _toDouble(json['price']),
+      currency: json['currency']?.toString() ?? 'INR',
+      isVisible: _toBool(json['isVisible'], fallback: true),
+      isInStock: _toBool(json['isInStock'], fallback: true),
+      imageUrl: json['imageUrl']?.toString() ?? json['image_url']?.toString(),
+      addons: (json['addons'] as List?)
+              ?.whereType<Map>()
+              .map((e) => MenuAddon.fromJson(Map<String, dynamic>.from(e)))
+              .toList() ??
+          [],
+      pricingRules: _parsePricingRules(json),
+    );
+  }
+
+  MenuPricingRule? get activeDiscount {
+    for (final rule in pricingRules) {
+      if (rule.ruleType != 'DISCOUNT' || !rule.isActive) continue;
+      return rule;
+    }
+    return null;
+  }
+
+  String? get discountLabel {
+    final rule = activeDiscount;
+    if (rule == null || rule.value <= 0) return null;
+    if (rule.valueType == 'PERCENTAGE') {
+      return '${rule.value.toStringAsFixed(rule.value % 1 == 0 ? 0 : 1)}% OFF';
+    }
+    return '₹${rule.value.toStringAsFixed(0)} OFF';
+  }
+
+  double get discountedPrice {
+    final rule = activeDiscount;
+    if (rule == null || rule.value <= 0) return price;
+    if (rule.valueType == 'PERCENTAGE') {
+      return (price * (1 - rule.value / 100)).clamp(0.0, double.infinity).toDouble();
+    }
+    return (price - rule.value).clamp(0.0, double.infinity).toDouble();
+  }
 
   Map<String, dynamic> toJson() => {
         'name': name,
@@ -137,6 +224,27 @@ class MenuChangeRequest {
             DateTime.tryParse(json['createdAt']?.toString() ?? '') ??
                 DateTime.now(),
       );
+}
+
+List<MenuPricingRule> _parsePricingRules(Map<String, dynamic> json) {
+  final raw = json['pricingRules'] ?? json['pricing_rules'];
+  if (raw is List) {
+    return raw
+        .whereType<Map>()
+        .map((e) => MenuPricingRule.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+  }
+  final inline = json['discount'];
+  if (inline is Map) {
+    return [
+      MenuPricingRule.fromJson({
+        ...Map<String, dynamic>.from(inline),
+        'ruleType': 'DISCOUNT',
+        'isActive': true,
+      }),
+    ];
+  }
+  return [];
 }
 
 double _toDouble(dynamic value) {

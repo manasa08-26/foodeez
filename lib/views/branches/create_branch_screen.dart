@@ -67,7 +67,7 @@ class _CreateBranchScreenState extends ConsumerState<CreateBranchScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          ok ? 'Branch created!' : (error ?? 'Failed to create branch'),
+          ok ? 'Branch created successfully' : (error ?? 'Failed to create branch'),
         ),
         backgroundColor: ok ? AppColors.success : AppColors.error,
         behavior: SnackBarBehavior.floating,

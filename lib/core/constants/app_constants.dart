@@ -73,6 +73,11 @@ class ApiEndpoints {
   static String menuItems(String branchId) => '/branches/$branchId/menu-items';
   static String menuItem(String itemId) => '/menu-items/$itemId';
   static String menuItemAddons(String itemId) => '/menu-items/$itemId/addons';
+  static String menuItemPricingRules(String itemId) =>
+      '/menu-items/$itemId/pricing-rules';
+  static String menuItemChangeRequest(String itemId) =>
+      '/menu-items/$itemId/change-requests';
+  static String menuPricingRule(String ruleId) => '/menu-pricing-rules/$ruleId';
   static String menuBulkUpload(String branchId) =>
       '/branches/$branchId/menu-bulk-upload';
   static String menuScan(String branchId) => '/branches/$branchId/menu-scan';

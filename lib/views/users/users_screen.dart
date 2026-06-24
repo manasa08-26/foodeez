@@ -36,6 +36,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     final restaurantId = ref.watch(restaurantIdProvider);
     if (restaurantId == null) {
       return const Center(child: Text('No restaurant linked'));
@@ -47,68 +48,70 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
       children: [
         Positioned.fill(
           child: usersAsync.when(
-        loading: () => const FullPageLoader(),
-        error: (e, _) => ErrorView(message: e.toString()),
-        data: (users) => users.isEmpty
-            ? EmptyState(
-                icon: Icons.people_outline,
-                title: 'No team members',
-                subtitle: 'Invite staff to manage your restaurant',
-                actionLabel: 'Add Member',
-                onAction: () => _showAddUserSheet(restaurantId),
-              )
-            : ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: users.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (_, i) {
-                  final user = users[i];
-                  return Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: AppColors.cardBorder),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 22,
-                          backgroundColor: AppColors.primarySurface,
-                          child: Text(
-                            (user.displayName.isNotEmpty
-                                    ? user.displayName[0]
-                                    : 'U')
-                                .toUpperCase(),
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w700,
+            loading: () => const FullPageLoader(),
+            error: (e, _) => ErrorView(message: e.toString()),
+            data: (users) => users.isEmpty
+                ? EmptyState(
+                    icon: Icons.people_outline,
+                    title: 'No team members',
+                    subtitle: 'Invite staff to manage your restaurant',
+                    actionLabel: 'Add Member',
+                    onAction: () => _showAddUserSheet(restaurantId),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: users.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (_, i) {
+                      final user = users[i];
+                      return Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: colors.surface,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: colors.cardBorder),
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: colors.primarySurface,
+                              child: Text(
+                                (user.displayName.isNotEmpty
+                                        ? user.displayName[0]
+                                        : 'U')
+                                    .toUpperCase(),
+                                style: TextStyle(
+                                  color: colors.primaryColor,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(user.displayName,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: colors.textPrimary)),
+                                  Text(user.email,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: colors.textSecondary)),
+                                ],
+                              ),
+                            ),
+                            StatusBadge(
+                                status:
+                                    user.role.split('_').last.toUpperCase()),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(user.displayName,
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600)),
-                              Text(user.email,
-                                  style: const TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.textSecondary)),
-                            ],
-                          ),
-                        ),
-                        StatusBadge(
-                            status: user.role.split('_').last.toUpperCase()),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                      );
+                    },
+                  ),
           ),
         ),
         Positioned(
@@ -118,7 +121,7 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
             onPressed: () => _showAddUserSheet(restaurantId),
             icon: const Icon(Icons.person_add_rounded),
             label: const Text('Add Member'),
-            backgroundColor: AppColors.primary,
+            backgroundColor: colors.primaryColor,
             foregroundColor: Colors.white,
           ),
         ),
@@ -177,6 +180,7 @@ class _AddUserSheetState extends ConsumerState<_AddUserSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -190,14 +194,17 @@ class _AddUserSheetState extends ConsumerState<_AddUserSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Add Team Member',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            Text('Add Team Member',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textPrimary)),
             const SizedBox(height: 20),
             AppTextField(
               label: 'Full Name',
               controller: _nameCtrl,
-              prefixIcon: const Icon(Icons.person_outline,
-                  color: AppColors.textHint, size: 18),
+              prefixIcon:
+                  Icon(Icons.person_outline, color: colors.textHint, size: 18),
               validator: (v) =>
                   v == null || v.isEmpty ? 'Name is required' : null,
             ),
@@ -206,8 +213,8 @@ class _AddUserSheetState extends ConsumerState<_AddUserSheet> {
               label: 'Email',
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
-              prefixIcon: const Icon(Icons.email_outlined,
-                  color: AppColors.textHint, size: 18),
+              prefixIcon:
+                  Icon(Icons.email_outlined, color: colors.textHint, size: 18),
               validator: (v) {
                 if (v == null || v.isEmpty) return 'Email is required';
                 if (!v.contains('@')) return 'Invalid email';
@@ -221,14 +228,14 @@ class _AddUserSheetState extends ConsumerState<_AddUserSheet> {
                 labelText: 'Role',
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border)),
+                    borderSide: BorderSide(color: colors.cardBorder)),
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.border)),
+                    borderSide: BorderSide(color: colors.cardBorder)),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide:
-                        const BorderSide(color: AppColors.primary, width: 2)),
+                        BorderSide(color: colors.primaryColor, width: 2)),
               ),
               items: _restaurantRoles
                   .map((r) => DropdownMenuItem(

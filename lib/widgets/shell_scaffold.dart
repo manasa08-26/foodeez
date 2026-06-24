@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'app_switch.dart';
 import '../core/constants/app_assets.dart';
 import '../core/constants/app_colors.dart';
 import '../providers/auth_provider.dart';
@@ -28,18 +29,14 @@ class ShellScaffold extends ConsumerWidget {
 
     return BackButtonListener(
       onBackButtonPressed: () async {
-        if (currentPath != '/dashboard') {
-          context.go('/dashboard');
-        }
+        _handleBack(context, currentPath);
         return true; // Consume Android back so the app never closes here.
       },
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, _) {
           if (didPop) return;
-          if (currentPath != '/dashboard') {
-            context.go('/dashboard');
-          }
+          _handleBack(context, currentPath);
         },
         child: Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -73,7 +70,7 @@ class ShellScaffold extends ConsumerWidget {
     bool canPop,
     bool isDark,
   ) {
-    final title = _titleFor(location);
+    final title = _titleFor(currentPath);
     final isDashboard = location == '/dashboard';
     final showDashboardBack = !canPop && !isDashboard;
     final titleColor = Theme.of(context).colorScheme.onSurface;
@@ -99,13 +96,13 @@ class ShellScaffold extends ConsumerWidget {
               ? IconButton(
                   icon: Icon(Icons.arrow_back_ios_new_rounded,
                       color: titleColor, size: 19),
-                  onPressed: () => context.go('/dashboard'),
+                  onPressed: () => _handleBack(context, currentPath),
                 )
               : showDashboardBack
                   ? IconButton(
                       icon: Icon(Icons.arrow_back_ios_new_rounded,
                           color: titleColor, size: 19),
-                      onPressed: () => context.go('/dashboard'),
+                      onPressed: () => _handleBack(context, currentPath),
                     )
                   : null,
       titleSpacing: isDashboard ? 4 : 0,
@@ -161,25 +158,31 @@ class ShellScaffold extends ConsumerWidget {
     return !hiddenPrefixes.any(location.startsWith);
   }
 
-  static String _titleFor(String location) {
-    if (location.startsWith('/branches') && location.contains('/menu/item')) {
-      return location.contains('/edit') ? 'Edit Menu Item' : 'New Menu Item';
+  static String _titleFor(String path) {
+    final segments = path.split('/').where((s) => s.isNotEmpty).toList();
+
+    if (segments.isNotEmpty && segments[0] == 'branches') {
+      if (segments.length == 1) return 'Branches';
+      if (segments[1] == 'new') return 'New Branch';
+
+      if (segments.length >= 3 && segments[2] == 'controls') {
+        return 'Branch Controls';
+      }
+      if (segments.length >= 3 && segments[2] == 'menu') {
+        if (path.contains('/menu/item')) {
+          return path.contains('/edit') ? 'Edit Menu Item' : 'New Menu Item';
+        }
+        if (path.contains('/menu/category')) {
+          return path.contains('/edit') ? 'Edit Category' : 'New Category';
+        }
+        return 'Menu';
+      }
+      if (segments.length == 2) return 'Branch';
     }
-    if (location.startsWith('/branches') && location.contains('/menu/category')) {
-      return location.contains('/edit') ? 'Edit Category' : 'New Category';
-    }
-    if (location.startsWith('/branches') && location.contains('/menu')) {
-      return 'Menu';
-    }
-    if (location.startsWith('/branches') && location.contains('/controls')) {
-      return 'Branch Controls';
-    }
-    if (location.startsWith('/branches/new')) return 'New Branch';
-    if (location.startsWith('/branches/') && location.split('/').length > 2) {
-      return 'Branch Detail';
-    }
-    if (location.startsWith('/orders/')) return 'Order Detail';
-    if (location == '/restaurant/onboarding') return 'Onboarding';
+
+    if (path.startsWith('/orders/') && segments.length >= 2)
+      return 'Order Detail';
+    if (path == '/restaurant/onboarding') return 'Onboarding';
 
     const map = {
       '/dashboard': 'Dashboard',
@@ -192,9 +195,48 @@ class ShellScaffold extends ConsumerWidget {
       '/users': 'Team',
     };
     for (final e in map.entries) {
-      if (location.startsWith(e.key)) return e.value;
+      if (path.startsWith(e.key)) return e.value;
     }
     return 'Foodeez';
+  }
+
+  static void _handleBack(BuildContext context, String currentPath) {
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    final target = _backTargetFor(currentPath);
+    if (currentPath != target) {
+      context.go(target);
+    }
+  }
+
+  /// Parent route when [context.pop] is unavailable (go_router stack).
+  static String _backTargetFor(String path) {
+    final segments = path.split('/').where((s) => s.isNotEmpty).toList();
+    if (segments.isEmpty) return '/dashboard';
+
+    if (segments[0] == 'branches') {
+      if (segments.length == 1) return '/dashboard';
+      if (segments[1] == 'new') return '/branches';
+
+      final branchId = segments[1];
+      if (segments.length >= 4 && segments[2] == 'menu') {
+        return '/branches/$branchId/menu';
+      }
+      if (segments.length >= 3 && segments[2] == 'menu') {
+        return '/branches';
+      }
+      if (segments.length >= 3 && segments[2] == 'controls') {
+        return '/branches/$branchId';
+      }
+      if (segments.length >= 2) return '/branches';
+      return '/branches';
+    }
+
+    if (segments[0] == 'orders' && segments.length >= 2) return '/orders';
+
+    return '/dashboard';
   }
 }
 
@@ -365,11 +407,11 @@ class _ProfileMenu extends StatelessWidget {
       itemBuilder: (context) => const [
         PopupMenuItem(
           value: _ProfileAction.restaurant,
-          child: _ProfileMenuRow(Icons.storefront_rounded, 'Restaurant'),
+          child: _ProfileMenuRow(Icons.storefront_outlined, 'My Restaurant'),
         ),
         PopupMenuItem(
           value: _ProfileAction.team,
-          child: _ProfileMenuRow(Icons.group_outlined, 'Team'),
+          child: _ProfileMenuRow(Icons.people_outline, 'Team & Members'),
         ),
         PopupMenuItem(
           value: _ProfileAction.documents,
@@ -520,17 +562,12 @@ class _HeaderOnlineSwitchState extends ConsumerState<_HeaderOnlineSwitch> {
                   SizedBox(
                     width: 34,
                     height: 24,
-                    child: Switch(
+                    child: AppSwitch(
                       value: isOnline,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      activeThumbColor: AppColors.white,
-                      activeTrackColor: AppColors.success,
-                      inactiveThumbColor: AppColors.white,
-                      inactiveTrackColor:
-                          AppColors.error.withValues(alpha: 0.78),
                       onChanged: isBusy
                           ? null
                           : (v) => _toggle(context, restaurantId, branch.id, v),
+                      onColor: AppColors.success,
                     ),
                   ),
                 ],
@@ -594,7 +631,7 @@ class _ProfileMenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final itemColor = color ?? AppColors.textPrimary;
+    final itemColor = color ?? context.adaptive.textPrimary;
     return Row(
       children: [
         Icon(icon, size: 19, color: itemColor),

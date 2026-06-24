@@ -6,6 +6,7 @@ import '../../models/branch_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/branch_provider.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/app_switch.dart';
 import '../../widgets/loading_overlay.dart';
 import '../../widgets/status_badge.dart';
 
@@ -149,13 +150,13 @@ class BranchesScreen extends ConsumerWidget {
                           Row(
                             children: [
                               _Action(Icons.menu_book_rounded, 'Menu',
-                                  () => context.go('/branches/${b.id}/menu')),
+                                  () => context.push('/branches/${b.id}/menu')),
                               const SizedBox(width: 8),
                               _Action(
                                   Icons.tune_rounded,
                                   'Controls',
                                   () => context
-                                      .go('/branches/${b.id}/controls')),
+                                      .push('/branches/${b.id}/controls')),
                               const Spacer(),
                               _OnlineToggle(
                                 branch: b,
@@ -299,11 +300,10 @@ class _OnlineToggleState extends ConsumerState<_OnlineToggle> {
           ),
         ),
         const SizedBox(width: 6),
-        Switch(
+        AppSwitch(
           value: _isOnline,
           onChanged: _busy ? null : _onChanged,
-          activeThumbColor: AppColors.success,
-          activeTrackColor: AppColors.success.withValues(alpha: 0.35),
+          onColor: AppColors.success,
         ),
       ],
     );

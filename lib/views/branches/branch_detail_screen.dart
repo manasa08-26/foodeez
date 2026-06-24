@@ -16,14 +16,14 @@ class BranchDetailScreen extends StatelessWidget {
             icon: Icons.menu_book_rounded,
             title: 'Menu Management',
             subtitle: 'Add, edit, and manage menu items',
-            onTap: () => context.go('/branches/$branchId/menu'),
+            onTap: () => context.push('/branches/$branchId/menu'),
           ),
           const SizedBox(height: 12),
           _TileAction(
             icon: Icons.tune_rounded,
             title: 'Branch Controls',
             subtitle: 'Hours, online status, busy mode',
-            onTap: () => context.go('/branches/$branchId/controls'),
+            onTap: () => context.push('/branches/$branchId/controls'),
           ),
         ],
       ),
@@ -46,14 +46,23 @@ class _TileAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: colors.cardBorder),
+          boxShadow: [
+            BoxShadow(
+              color: colors.cardShadow,
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -61,27 +70,36 @@ class _TileAction extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.primarySurface,
+                color: colors.primarySurface,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: AppColors.primary, size: 24),
+              child: Icon(icon, color: colors.primaryColor, size: 24),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w600)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style: const TextStyle(
-                          fontSize: 13, color: AppColors.textSecondary)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
+            Icon(Icons.chevron_right_rounded, color: colors.textHint),
           ],
         ),
       ),

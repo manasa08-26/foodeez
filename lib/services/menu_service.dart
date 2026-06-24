@@ -16,10 +16,43 @@ class MenuService {
     try {
       final res = await _dio.get(ApiEndpoints.menuCategories(branchId));
       final list = _toList(res.data);
-      return list.map((e) => MenuCategory.fromJson(e as Map<String, dynamic>)).toList();
+      return list
+          .map((e) => MenuCategory.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
+  }
+
+  Future<List<MenuItem>> getMenuItems(String branchId) async {
+    try {
+      final res = await _dio.get(ApiEndpoints.menuItems(branchId));
+      final list = _toList(res.data);
+      return list
+          .map((e) => MenuItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<List<MenuCategory>> getBranchMenu(String branchId) async {
+    final results = await Future.wait([
+      getCategories(branchId),
+      getMenuItems(branchId),
+    ]);
+    final categories = results[0] as List<MenuCategory>;
+    final items = results[1] as List<MenuItem>;
+
+    final byCategory = <String, List<MenuItem>>{};
+    for (final item in items) {
+      if (item.categoryId.isEmpty) continue;
+      byCategory.putIfAbsent(item.categoryId, () => []).add(item);
+    }
+
+    return categories
+        .map((c) => c.copyWith(items: byCategory[c.id] ?? c.items))
+        .toList();
   }
 
   Future<MenuCategory> createCategory(
@@ -61,6 +94,57 @@ class MenuService {
       final res =
           await _dio.patch(ApiEndpoints.menuItem(itemId), data: data);
       return MenuItem.fromJson(res.data);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<void> submitItemChangeRequest(
+    String itemId,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      await _dio.post(ApiEndpoints.menuItemChangeRequest(itemId), data: data);
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<void> upsertItemDiscount(
+    String itemId, {
+    MenuPricingRule? existingRule,
+    required Map<String, dynamic> discount,
+  }) async {
+    try {
+      if (existingRule != null && existingRule.id.isNotEmpty) {
+        await _dio.patch(
+          ApiEndpoints.menuPricingRule(existingRule.id),
+          data: {
+            'ruleType': 'DISCOUNT',
+            ...discount,
+            'isActive': true,
+          },
+        );
+      } else {
+        await _dio.post(
+          ApiEndpoints.menuItemPricingRules(itemId),
+          data: {
+            'ruleType': 'DISCOUNT',
+            ...discount,
+          },
+        );
+      }
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
+  Future<void> deactivateDiscount(String ruleId) async {
+    try {
+      await _dio.patch(
+        ApiEndpoints.menuPricingRule(ruleId),
+        data: {'isActive': false},
+      );
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }

@@ -6,12 +6,27 @@ import '../services/menu_service.dart';
 final menuCategoriesProvider =
     FutureProvider.autoDispose.family<List<MenuCategory>, String>(
         (ref, branchId) async {
-  return ref.read(menuServiceProvider).getCategories(branchId);
+  return ref.read(menuServiceProvider).getBranchMenu(branchId);
 });
 
-// Track selected category
 final selectedCategoryProvider =
     StateProvider.autoDispose<String?>((ref) => null);
+
+MenuItem? findMenuItem(List<MenuCategory> categories, String itemId) {
+  for (final category in categories) {
+    for (final item in category.items) {
+      if (item.id == itemId) return item;
+    }
+  }
+  return null;
+}
+
+MenuCategory? findMenuCategory(List<MenuCategory> categories, String id) {
+  for (final category in categories) {
+    if (category.id == id) return category;
+  }
+  return null;
+}
 
 class MenuActionState {
   final bool isLoading;
@@ -61,10 +76,43 @@ class MenuNotifier extends Notifier<MenuActionState> {
     }
   }
 
-  Future<bool> updateItem(String itemId, Map<String, dynamic> data) async {
+  Future<bool> updateItemDirect(
+    String itemId,
+    Map<String, dynamic> data, {
+    MenuPricingRule? existingDiscount,
+    Map<String, dynamic>? discount,
+    bool discountEnabled = false,
+  }) async {
     state = const MenuActionState(isLoading: true);
     try {
-      await ref.read(menuServiceProvider).updateMenuItem(itemId, data);
+      final service = ref.read(menuServiceProvider);
+      await service.updateMenuItem(itemId, data);
+
+      if (discountEnabled && discount != null) {
+        await service.upsertItemDiscount(
+          itemId,
+          existingRule: existingDiscount,
+          discount: discount,
+        );
+      } else if (existingDiscount != null && existingDiscount.id.isNotEmpty) {
+        await service.deactivateDiscount(existingDiscount.id);
+      }
+
+      state = const MenuActionState();
+      return true;
+    } catch (e) {
+      state = MenuActionState(error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> submitItemChangeRequest(
+    String itemId,
+    Map<String, dynamic> data,
+  ) async {
+    state = const MenuActionState(isLoading: true);
+    try {
+      await ref.read(menuServiceProvider).submitItemChangeRequest(itemId, data);
       state = const MenuActionState();
       return true;
     } catch (e) {
@@ -75,7 +123,9 @@ class MenuNotifier extends Notifier<MenuActionState> {
 
   Future<bool> toggleVisibility(String itemId, bool isVisible) async {
     try {
-      await ref.read(menuServiceProvider).toggleItemVisibility(itemId, isVisible);
+      await ref
+          .read(menuServiceProvider)
+          .toggleItemVisibility(itemId, isVisible);
       return true;
     } catch (_) {
       return false;

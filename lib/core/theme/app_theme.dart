@@ -558,15 +558,15 @@ class AppTheme {
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return AppColors.primaryLight;
-          }
+          if (states.contains(WidgetState.selected)) return AppColors.white;
           return AppColors.darkTextHint;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return AppColors.primaryLight.withValues(alpha: 0.35);
-          }
+          if (states.contains(WidgetState.selected)) return AppColors.success;
+          return AppColors.darkCardBorder;
+        }),
+        trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return Colors.transparent;
           return AppColors.darkCardBorder;
         }),
       ),

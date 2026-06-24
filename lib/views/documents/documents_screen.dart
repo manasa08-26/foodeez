@@ -21,6 +21,7 @@ class DocumentsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.adaptive;
     final restaurantId = ref.watch(restaurantIdProvider);
     if (restaurantId == null) {
       return const Center(child: Text('No restaurant linked'));
@@ -29,68 +30,67 @@ class DocumentsScreen extends ConsumerWidget {
     final docsAsync = ref.watch(documentsProvider(restaurantId));
 
     return docsAsync.when(
-        loading: () => const FullPageLoader(),
-        error: (e, _) => ErrorView(
-          message: 'Unable to load documents\n${e.toString()}',
-          onRetry: () => ref.invalidate(documentsProvider(restaurantId)),
-        ),
-        data: (docs) => ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 104),
-          children: [
-            const Text(
-              'Upload and track required restaurant verification files.',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
+      loading: () => const FullPageLoader(),
+      error: (e, _) => ErrorView(
+        message: 'Unable to load documents\n${e.toString()}',
+        onRetry: () => ref.invalidate(documentsProvider(restaurantId)),
+      ),
+      data: (docs) => ListView(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 104),
+        children: [
+          Text(
+            'Upload and track required restaurant verification files.',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: colors.textSecondary,
             ),
-            const SizedBox(height: 16),
-            // Info banner
-            Container(
-              padding: const EdgeInsets.all(15),
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: AppColors.primarySurface,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.info_outline, color: AppColors.primary, size: 18),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Documents are verified by our team. Upload clear images.',
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary),
-                    ),
+          ),
+          const SizedBox(height: 16),
+          // Info banner
+          Container(
+            padding: const EdgeInsets.all(15),
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: colors.primarySurface,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline, color: colors.primaryColor, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Documents are verified by our team. Upload clear images.',
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: colors.primaryColor),
                   ),
-                ],
-              ),
-            ),
-            ..._docTypes.map((type) {
-              final doc = docs.firstWhere(
-                (d) => d.type == type.$1,
-                orElse: () => DocumentModel(
-                  id: '',
-                  restaurantId: restaurantId,
-                  type: type.$1,
-                  status: 'NOT_UPLOADED',
-                  createdAt: DateTime.now(),
                 ),
-              );
-              return _DocumentCard(
-                doc: doc,
-                label: type.$2,
+              ],
+            ),
+          ),
+          ..._docTypes.map((type) {
+            final doc = docs.firstWhere(
+              (d) => d.type == type.$1,
+              orElse: () => DocumentModel(
+                id: '',
                 restaurantId: restaurantId,
-                onUploaded: () =>
-                    ref.invalidate(documentsProvider(restaurantId)),
-              );
-            }),
-          ],
-        ),
+                type: type.$1,
+                status: 'NOT_UPLOADED',
+                createdAt: DateTime.now(),
+              ),
+            );
+            return _DocumentCard(
+              doc: doc,
+              label: type.$2,
+              restaurantId: restaurantId,
+              onUploaded: () => ref.invalidate(documentsProvider(restaurantId)),
+            );
+          }),
+        ],
+      ),
     );
   }
 }
@@ -137,6 +137,7 @@ class _DocumentCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.adaptive;
     final uploadState = ref.watch(documentUploadProvider);
     final isUploading = uploadState.isLoading;
     final isUploaded = doc.id.isNotEmpty;
@@ -145,18 +146,18 @@ class _DocumentCard extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(17),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: doc.isVerified
-              ? AppColors.success.withValues(alpha: 0.4)
+              ? colors.successSurface.withValues(alpha: 0.4)
               : doc.isRejected
-                  ? AppColors.error.withValues(alpha: 0.4)
-                  : AppColors.cardBorder,
+                  ? colors.errorSurface.withValues(alpha: 0.4)
+                  : colors.cardBorder,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.035),
+            color: colors.cardShadow,
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -169,10 +170,10 @@ class _DocumentCard extends ConsumerWidget {
             height: 48,
             decoration: BoxDecoration(
               color: doc.isVerified
-                  ? AppColors.successSurface
+                  ? colors.successSurface
                   : doc.isRejected
-                      ? AppColors.errorSurface
-                      : AppColors.primarySurface,
+                      ? colors.errorSurface
+                      : colors.primarySurface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
@@ -181,7 +182,7 @@ class _DocumentCard extends ConsumerWidget {
                   ? AppColors.success
                   : doc.isRejected
                       ? AppColors.error
-                      : AppColors.primary,
+                      : colors.primaryColor,
               size: 24,
             ),
           ),
@@ -191,23 +192,22 @@ class _DocumentCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 15,
                         letterSpacing: -0.2,
-                        fontWeight: FontWeight.w900)),
+                        fontWeight: FontWeight.w900,
+                        color: colors.textPrimary)),
                 const SizedBox(height: 2),
                 if (isUploaded)
                   StatusBadge(status: doc.status)
                 else
-                  const Text('Not uploaded',
-                      style:
-                          TextStyle(fontSize: 12, color: AppColors.textHint)),
+                  Text('Not uploaded',
+                      style: TextStyle(fontSize: 12, color: colors.textHint)),
                 if (doc.isRejected && doc.rejectionReason != null) ...[
                   const SizedBox(height: 4),
                   Text(
                     doc.rejectionReason!,
-                    style:
-                        const TextStyle(fontSize: 11, color: AppColors.error),
+                    style: TextStyle(fontSize: 11, color: AppColors.error),
                   ),
                 ],
               ],
@@ -227,7 +227,7 @@ class _DocumentCard extends ConsumerWidget {
                               AlwaysStoppedAnimation(AppColors.primary)))
                   : const Icon(Icons.upload_rounded, size: 18),
               label: Text(isUploaded ? 'Re-upload' : 'Upload'),
-              style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+              style: TextButton.styleFrom(foregroundColor: colors.primaryColor),
             ),
         ],
       ),
