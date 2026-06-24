@@ -87,17 +87,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final user = ref.watch(currentUserProvider);
     final dataAsync = ref.watch(rawDashboardProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: dataAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(
+    return dataAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, _) => Center(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const Icon(Icons.error_outline, size: 48, color: AppColors.error),
             const SizedBox(height: 12),
             Text(err.toString(),
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textSecondary)),
+                style: TextStyle(color: context.adaptive.textSecondary)),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: () => ref.invalidate(rawDashboardProvider),
@@ -106,7 +104,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ]),
         ),
         data: (data) => RefreshIndicator(
-          color: AppColors.primary,
+          color: context.adaptive.primaryColor,
           onRefresh: _refresh,
           child: CustomScrollView(
             slivers: [
@@ -119,7 +117,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     const SizedBox(height: 16),
 
                     // ── Total branches gold card ─────────────────────────────
-                    _buildTotalBranchesCard(data),
+                    _buildTotalBranchesCard(context, data),
                     const SizedBox(height: 12),
 
                     // ── Online / Offline stat pills ──────────────────────────
@@ -165,7 +163,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ],
           ),
         ),
-      ),
     );
   }
 
@@ -184,13 +181,17 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final todayOrders = data['todayOrders'] ?? data['orders'] ?? 0;
     final avgTime = data['avgOrderTime'] ?? data['avgTime'] ?? '--';
 
+    final isDark = context.adaptive.isDark;
+
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF211039), Color(0xFF5A2DB4)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+      decoration: BoxDecoration(
+        gradient: isDark
+            ? AppColors.darkHeroGradient
+            : const LinearGradient(
+                colors: [Color(0xFF211039), Color(0xFF5A2DB4)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(32),
           bottomRight: Radius.circular(32),
@@ -326,7 +327,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   // ── Total branches gold card ─────────────────────────────────────────────
-  Widget _buildTotalBranchesCard(Map<String, dynamic> data) {
+  Widget _buildTotalBranchesCard(BuildContext context, Map<String, dynamic> data) {
+    final colors = context.adaptive;
     final total = data['totalBranches'] ?? data['branchesCount'] ?? 0;
     final online = data['activeBranches'] ?? data['onlineBranches'] ?? 0;
     final totalN =
@@ -341,7 +343,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         borderRadius: BorderRadius.circular(24),
         border:
             Border.all(color: const Color(0xFFF0C35A).withValues(alpha: 0.9)),
-        color: AppColors.white,
+        color: colors.surface,
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFF0C35A).withValues(alpha: 0.16),
@@ -360,11 +362,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   fontSize: 11)),
           const SizedBox(height: 8),
           Text(totalN.toString(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 40,
                 height: 0.96,
                 letterSpacing: -1.4,
                 fontWeight: FontWeight.w900,
+                color: colors.textPrimary,
               )),
           const SizedBox(height: 6),
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -415,6 +418,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   // ── Branch list with filter ──────────────────────────────────────────────
   Widget _buildBranchList(BuildContext context, Map<String, dynamic> data) {
+    final colors = context.adaptive;
     final raw = data['branchMetrics'];
     final branches = (raw is List)
         ? raw.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList()
@@ -433,8 +437,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         padding: const EdgeInsets.all(12),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const Text('Branch Status',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            Text('Branch Status',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: colors.textPrimary)),
             Row(children: [
               for (final f in ['all', 'online', 'offline'])
                 Padding(
@@ -442,7 +449,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   child: ChoiceChip(
                     label: Text(f, style: const TextStyle(fontSize: 12)),
                     selected: _branchFilter == f,
-                    selectedColor: AppColors.primary.withValues(alpha: 0.15),
+                    selectedColor: colors.primaryColor.withValues(alpha: 0.22),
                     onSelected: (_) => setState(() => _branchFilter = f),
                   ),
                 ),
@@ -454,7 +461,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               padding: const EdgeInsets.all(8),
               child: Text(
                   'No ${_branchFilter != 'all' ? _branchFilter : ''} branches found.',
-                  style: const TextStyle(color: AppColors.textSecondary)),
+                  style: TextStyle(color: colors.textSecondary)),
             )
           else
             ...filtered.map((b) => _BranchTile(branch: b)),
@@ -471,6 +478,7 @@ class _BranchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     final name = branch['name']?.toString() ?? '';
     final isOnline = branch['isOnline'] == true;
     final open = branch['openingTime']?.toString() ?? '';
@@ -485,22 +493,24 @@ class _BranchTile extends StatelessWidget {
           style: const TextStyle(color: Colors.white),
         ),
       ),
-      title: Text(name, style: const TextStyle(fontWeight: FontWeight.w500)),
+      title: Text(name,
+          style: TextStyle(
+              fontWeight: FontWeight.w500, color: colors.textPrimary)),
       subtitle: Text(
           (open.isNotEmpty && close.isNotEmpty)
               ? '$open – $close'
               : 'Hours not set',
-          style: const TextStyle(fontSize: 12)),
+          style: TextStyle(fontSize: 12, color: colors.textSecondary)),
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: isOnline ? AppColors.successSurface : AppColors.cardBorder,
+          color: isOnline ? colors.successSurface : colors.cardBorder,
         ),
         child: Text(
           isOnline ? 'Online' : 'Offline',
           style: TextStyle(
-              color: isOnline ? AppColors.success : AppColors.textSecondary,
+              color: isOnline ? AppColors.success : colors.textSecondary,
               fontWeight: FontWeight.w600,
               fontSize: 12),
         ),

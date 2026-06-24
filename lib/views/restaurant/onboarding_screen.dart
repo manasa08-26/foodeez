@@ -12,16 +12,12 @@ class OnboardingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final restaurantId = ref.watch(restaurantIdProvider);
     if (restaurantId == null) {
-      return const Scaffold(
-          body: Center(child: Text('No restaurant linked')));
+      return const Center(child: Text('No restaurant linked'));
     }
 
     final onboardingAsync = ref.watch(onboardingProvider(restaurantId));
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Onboarding Status')),
-      body: onboardingAsync.when(
+    return onboardingAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(message: e.toString()),
         data: (status) {
@@ -103,7 +99,6 @@ class OnboardingScreen extends ConsumerWidget {
             ),
           );
         },
-      ),
     );
   }
 }

@@ -2,45 +2,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "🟣 Production (https://int.foodeez.in)",
+      "name": "Foodeez (Production API)",
       "type": "dart",
       "request": "launch",
-      "program": "lib/main.dart",
-      "flutterMode": "debug",
-      "args": [
-        "--dart-define=API_BASE_URL=https://int.foodeez.in/api/v1",
-        "--dart-define=PRODUCTION=true"
-      ]
-    },
-    {
-      "name": "🔧 Local - Android Emulator (10.0.2.2:3001)",
-      "type": "dart",
-      "request": "launch",
-      "program": "lib/main.dart",
-      "args": [
-        "--dart-define=API_BASE_URL=http://10.0.2.2:3001/api/v1",
-        "--dart-define=PRODUCTION=false"
-      ]
-    },
-    {
-      "name": "🔧 Local - iOS Simulator (localhost:3001)",
-      "type": "dart",
-      "request": "launch",
-      "program": "lib/main.dart",
-      "args": [
-        "--dart-define=API_BASE_URL=http://localhost:3001/api/v1",
-        "--dart-define=PRODUCTION=false"
-      ]
-    },
-    {
-      "name": "🔧 Local - Real Device (change IP below)",
-      "type": "dart",
-      "request": "launch",
-      "program": "lib/main.dart",
-      "args": [
-        "--dart-define=API_BASE_URL=http://192.168.1.100:3001/api/v1",
-        "--dart-define=PRODUCTION=false"
-      ]
+      "program": "lib/main.dart"
     }
   ]
 }

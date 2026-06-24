@@ -35,10 +35,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
   Widget build(BuildContext context) {
     final orderAsync = ref.watch(orderDetailProvider(widget.orderId));
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      // appBar: AppBar(title: const Text('Order Detail')),
-      body: orderAsync.when(
+    return orderAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(message: e.toString()),
         data: (order) => LoadingOverlay(
@@ -66,7 +63,6 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 }

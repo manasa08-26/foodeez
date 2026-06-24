@@ -26,11 +26,10 @@ class OrdersScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(orderFilterProvider);
     final ordersAsync = ref.watch(ordersProvider);
+    final colors = context.adaptive;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Column(
-        children: [
+    return Column(
+      children: [
           // Status filter chips
           SizedBox(
             height: 54,
@@ -49,17 +48,17 @@ class OrdersScreen extends ConsumerWidget {
                       .read(orderFilterProvider.notifier)
                       .update((s) => s.copyWith(
                           status: status, clearStatus: status == null)),
-                  selectedColor: AppColors.primary,
+                  selectedColor: colors.primaryColor,
                   checkmarkColor: Colors.white,
                   labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                    color: isSelected ? Colors.white : colors.textSecondary,
                     fontSize: 12.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.1,
                   ),
-                  backgroundColor: AppColors.white,
+                  backgroundColor: colors.surface,
                   side: BorderSide(
-                    color: isSelected ? AppColors.primary : AppColors.border,
+                    color: isSelected ? colors.primaryColor : colors.cardBorder,
                   ),
                 );
               },
@@ -80,7 +79,7 @@ class OrdersScreen extends ConsumerWidget {
                       subtitle: 'Orders will appear here when received',
                     )
                   : RefreshIndicator(
-                      color: AppColors.primary,
+                      color: colors.primaryColor,
                       onRefresh: () => ref.refresh(ordersProvider.future),
                       child: ListView.separated(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 104),
@@ -93,18 +92,17 @@ class OrdersScreen extends ConsumerWidget {
                             child: Container(
                               padding: const EdgeInsets.all(17),
                               decoration: BoxDecoration(
-                                color: AppColors.white,
+                                color: colors.surface,
                                 borderRadius: BorderRadius.circular(22),
                                 border: Border.all(
                                   color: order.isPending
                                       ? AppColors.warning
-                                      : AppColors.cardBorder,
+                                      : colors.cardBorder,
                                   width: order.isPending ? 1.4 : 1,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        Colors.black.withValues(alpha: 0.035),
+                                    color: colors.cardShadow,
                                     blurRadius: 18,
                                     offset: const Offset(0, 8),
                                   ),
@@ -122,21 +120,21 @@ class OrdersScreen extends ConsumerWidget {
                                           children: [
                                             Text(
                                               '#${order.orderNumber}',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 16,
                                                 height: 1.15,
                                                 letterSpacing: -0.35,
                                                 fontWeight: FontWeight.w900,
+                                                color: colors.textPrimary,
                                               ),
                                             ),
                                             if (order.customerName != null)
                                               Text(
                                                 order.customerName!,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.w600,
-                                                  color:
-                                                      AppColors.textSecondary,
+                                                  color: colors.textSecondary,
                                                 ),
                                               ),
                                           ],
@@ -152,11 +150,10 @@ class OrdersScreen extends ConsumerWidget {
                                         .take(3)
                                         .map((item) => Text(
                                               '${item.name} ×${item.quantity}',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w600,
-                                                  color:
-                                                      AppColors.textSecondary),
+                                                  color: colors.textSecondary),
                                             ))
                                         .toList(),
                                   ),
@@ -165,27 +162,27 @@ class OrdersScreen extends ConsumerWidget {
                                     children: [
                                       Text(
                                         AppFormatters.currency(order.total),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w900,
                                           letterSpacing: -0.4,
-                                          color: AppColors.primary,
+                                          color: colors.primaryColor,
                                         ),
                                       ),
                                       const Spacer(),
-                                      const Icon(Icons.access_time_rounded,
-                                          size: 12, color: AppColors.textHint),
+                                      Icon(Icons.access_time_rounded,
+                                          size: 12, color: colors.textHint),
                                       const SizedBox(width: 4),
                                       Text(
                                         timeago.format(order.createdAt),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                             fontSize: 11.5,
                                             fontWeight: FontWeight.w600,
-                                            color: AppColors.textHint),
+                                            color: colors.textHint),
                                       ),
                                       const SizedBox(width: 4),
-                                      const Icon(Icons.chevron_right_rounded,
-                                          color: AppColors.textHint, size: 18),
+                                      Icon(Icons.chevron_right_rounded,
+                                          color: colors.textHint, size: 18),
                                     ],
                                   ),
                                 ],
@@ -198,7 +195,6 @@ class OrdersScreen extends ConsumerWidget {
             ),
           ),
         ],
-      ),
     );
   }
 }

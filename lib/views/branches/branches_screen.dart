@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/branch_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/branch_provider.dart';
 import '../../widgets/empty_state.dart';
@@ -15,23 +16,22 @@ class BranchesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final restaurantId = ref.watch(restaurantIdProvider);
     if (restaurantId == null) {
-      return const Scaffold(body: Center(child: Text('No restaurant linked')));
+      return const Center(child: Text('No restaurant linked'));
     }
 
     final branchesAsync = ref.watch(branchesProvider(restaurantId));
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? AppColors.darkSurface : AppColors.white;
+    final borderColor = isDark ? AppColors.darkCardBorder : AppColors.cardBorder;
+    final titleColor = colorScheme.onSurface;
+    final subtitleColor =
+        isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      // appBar: AppBar(title: const Text('Branches')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.go('/branches/new'),
-        icon: const Icon(Icons.add),
-        label: const Text('Add Branch'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      ),
-      body: branchesAsync.when(
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: branchesAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(
           message: e.toString(),
@@ -55,32 +55,35 @@ class BranchesScreen extends ConsumerWidget {
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (_, i) {
                     final b = branches[i];
-                    return GestureDetector(
-                      onTap: () => context.go('/branches/${b.id}'),
-                      child: Container(
-                        padding: const EdgeInsets.all(17),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(22),
-                          border: Border.all(color: AppColors.cardBorder),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.035),
-                              blurRadius: 18,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                    return Container(
+                      padding: const EdgeInsets.all(17),
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(color: borderColor),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.035),
+                            blurRadius: 18,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InkWell(
+                            borderRadius: BorderRadius.circular(14),
+                            onTap: () => context.go('/branches/${b.id}'),
+                            child: Row(
                               children: [
                                 Container(
                                   width: 46,
                                   height: 46,
                                   decoration: BoxDecoration(
-                                    color: AppColors.primarySurface,
+                                    color: isDark
+                                        ? AppColors.darkPrimarySurface
+                                        : AppColors.primarySurface,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: const Icon(
@@ -97,11 +100,12 @@ class BranchesScreen extends ConsumerWidget {
                                     children: [
                                       Text(
                                         b.name,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 16,
                                           height: 1.15,
                                           letterSpacing: -0.35,
                                           fontWeight: FontWeight.w900,
+                                          color: titleColor,
                                         ),
                                       ),
                                       if (b.city != null)
@@ -109,9 +113,9 @@ class BranchesScreen extends ConsumerWidget {
                                           [b.city, b.state]
                                               .where((e) => e != null)
                                               .join(', '),
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 12,
-                                            color: AppColors.textSecondary,
+                                            color: subtitleColor,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -122,48 +126,66 @@ class BranchesScreen extends ConsumerWidget {
                                     status: b.isOnline ? 'ACTIVE' : 'INACTIVE'),
                               ],
                             ),
-                            if (b.openingTime != null || b.closingTime != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.access_time_rounded,
-                                        size: 14,
-                                        color: AppColors.textSecondary),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '${b.openingTime ?? ''} – ${b.closingTime ?? ''}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary,
-                                      ),
+                          ),
+                          if (b.openingTime != null || b.closingTime != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.access_time_rounded,
+                                      size: 14, color: subtitleColor),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    '${b.openingTime ?? ''} – ${b.closingTime ?? ''}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: subtitleColor,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                _Action(Icons.menu_book_rounded, 'Menu',
-                                    () => context.go('/branches/${b.id}/menu')),
-                                const SizedBox(width: 8),
-                                _Action(
-                                    Icons.tune_rounded,
-                                    'Controls',
-                                    () => context
-                                        .go('/branches/${b.id}/controls')),
-                                const Spacer(),
-                                _OnlineToggle(b: b, restaurantId: restaurantId),
-                              ],
                             ),
-                          ],
-                        ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              _Action(Icons.menu_book_rounded, 'Menu',
+                                  () => context.go('/branches/${b.id}/menu')),
+                              const SizedBox(width: 8),
+                              _Action(
+                                  Icons.tune_rounded,
+                                  'Controls',
+                                  () => context
+                                      .go('/branches/${b.id}/controls')),
+                              const Spacer(),
+                              _OnlineToggle(
+                                branch: b,
+                                restaurantId: restaurantId,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     );
                   },
                 ),
               ),
-      ),
+          ),
+        ),
+        Positioned(
+          right: 16,
+          bottom: 88,
+          child: FloatingActionButton.extended(
+            onPressed: () => context.go('/branches/new'),
+            icon: const Icon(Icons.add),
+            label: const Text('Add Branch'),
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -176,12 +198,13 @@ class _Action extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: AppColors.primarySurface,
+          color: isDark ? AppColors.darkPrimarySurface : AppColors.primarySurface,
           borderRadius: BorderRadius.circular(999),
         ),
         child: Row(
@@ -200,32 +223,87 @@ class _Action extends StatelessWidget {
   }
 }
 
-class _OnlineToggle extends ConsumerWidget {
-  final dynamic b;
+class _OnlineToggle extends ConsumerStatefulWidget {
+  const _OnlineToggle({required this.branch, required this.restaurantId});
+
+  final BranchModel branch;
   final String restaurantId;
-  const _OnlineToggle({required this.b, required this.restaurantId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_OnlineToggle> createState() => _OnlineToggleState();
+}
+
+class _OnlineToggleState extends ConsumerState<_OnlineToggle> {
+  late bool _isOnline;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isOnline = widget.branch.isOnline;
+  }
+
+  @override
+  void didUpdateWidget(covariant _OnlineToggle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.branch.id != widget.branch.id ||
+        oldWidget.branch.isOnline != widget.branch.isOnline) {
+      _isOnline = widget.branch.isOnline;
+    }
+  }
+
+  Future<void> _onChanged(bool value) async {
+    if (_busy) return;
+    final previous = _isOnline;
+    setState(() {
+      _isOnline = value;
+      _busy = true;
+    });
+
+    final ok = await ref.read(branchControlsProvider.notifier).toggleOnline(
+          widget.restaurantId,
+          widget.branch.id,
+          value,
+        );
+
+    if (!mounted) return;
+    if (!ok) {
+      setState(() => _isOnline = previous);
+      final error = ref.read(branchControlsProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error ?? 'Could not update branch status'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+    setState(() => _busy = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final subtitleColor = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.darkTextSecondary
+        : AppColors.textSecondary;
+
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          b.isOnline ? 'Online' : 'Offline',
+          _isOnline ? 'Online' : 'Offline',
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w800,
-            color: b.isOnline ? AppColors.success : AppColors.textSecondary,
+            color: _isOnline ? AppColors.success : subtitleColor,
           ),
         ),
         const SizedBox(width: 6),
         Switch(
-          value: b.isOnline,
+          value: _isOnline,
+          onChanged: _busy ? null : _onChanged,
           activeThumbColor: AppColors.success,
-          onChanged: (v) {
-            ref
-                .read(branchControlsProvider.notifier)
-                .toggleOnline(restaurantId, b.id, v);
-          },
+          activeTrackColor: AppColors.success.withValues(alpha: 0.35),
         ),
       ],
     );

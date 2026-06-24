@@ -16,16 +16,10 @@ class MenuScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(menuCategoriesProvider(branchId));
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.go('/branches/$branchId/menu/item/new'),
-        icon: const Icon(Icons.add),
-        label: const Text('Add Item'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ),
-      body: categoriesAsync.when(
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: categoriesAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(
           message: e.toString(),
@@ -52,7 +46,20 @@ class MenuScreen extends ConsumerWidget {
                       branchId: branchId, category: categories[i]),
                 ),
               ),
-      ),
+          ),
+        ),
+        Positioned(
+          right: 16,
+          bottom: 88,
+          child: FloatingActionButton.extended(
+            onPressed: () => context.go('/branches/$branchId/menu/item/new'),
+            icon: const Icon(Icons.add),
+            label: const Text('Add Item'),
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }

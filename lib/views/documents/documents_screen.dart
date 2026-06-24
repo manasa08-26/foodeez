@@ -23,15 +23,12 @@ class DocumentsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final restaurantId = ref.watch(restaurantIdProvider);
     if (restaurantId == null) {
-      return const Scaffold(body: Center(child: Text('No restaurant linked')));
+      return const Center(child: Text('No restaurant linked'));
     }
 
     final docsAsync = ref.watch(documentsProvider(restaurantId));
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      //appBar: AppBar(title: const Text('Documents')),
-      body: docsAsync.when(
+    return docsAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(
           message: 'Unable to load documents\n${e.toString()}',
@@ -94,7 +91,6 @@ class DocumentsScreen extends ConsumerWidget {
             }),
           ],
         ),
-      ),
     );
   }
 }

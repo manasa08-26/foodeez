@@ -7,6 +7,7 @@ class OnboardingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     double progress = 0.0;
     if (data['onboardingProgress'] is num) {
       progress = (data['onboardingProgress'] as num) / 100.0;
@@ -26,12 +27,12 @@ class OnboardingCard extends StatelessWidget {
         data['restaurantName']?.toString() ?? data['name']?.toString() ?? '';
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.035),
+            color: colors.cardShadow,
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -41,22 +42,23 @@ class OnboardingCard extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            const Icon(Icons.checklist_rounded,
-                color: AppColors.primary, size: 18),
+            Icon(Icons.checklist_rounded, color: colors.primaryColor, size: 18),
             const SizedBox(width: 8),
-            const Text('Onboarding Progress',
+            Text('Onboarding Progress',
                 style: TextStyle(
                     fontSize: 16,
                     letterSpacing: -0.25,
-                    fontWeight: FontWeight.w900)),
+                    fontWeight: FontWeight.w900,
+                    color: colors.textPrimary)),
           ]),
           const SizedBox(height: 12),
           if (restaurantName.isNotEmpty)
             Text(restaurantName,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 15,
                     letterSpacing: -0.2,
-                    fontWeight: FontWeight.w800)),
+                    fontWeight: FontWeight.w800,
+                    color: colors.textPrimary)),
           const SizedBox(height: 10),
           Row(children: [
             Expanded(
@@ -65,42 +67,24 @@ class OnboardingCard extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: progress,
                   minHeight: 9,
-                  backgroundColor: AppColors.primarySurface,
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  backgroundColor: colors.primarySurface,
+                  valueColor: AlwaysStoppedAnimation<Color>(colors.primaryColor),
                 ),
               ),
             ),
             const SizedBox(width: 12),
             Text('$pct%',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w900, color: AppColors.primary)),
+                style: TextStyle(
+                    fontWeight: FontWeight.w900, color: colors.primaryColor)),
           ]),
           const SizedBox(height: 6),
           Text(
             '$pct% complete${leadStatus.isNotEmpty ? ' · $leadStatus' : ''}',
-            style: const TextStyle(
-                color: AppColors.textSecondary,
+            style: TextStyle(
+                color: colors.textSecondary,
                 fontSize: 12,
                 fontWeight: FontWeight.w600),
           ),
-          // if (progress < 1.0) ...[
-          //   const SizedBox(height: 12),
-          //   SizedBox(
-          //     width: double.infinity,
-          //     child: ElevatedButton(
-          //       style: ElevatedButton.styleFrom(
-          //           backgroundColor: AppColors.primary,
-          //           foregroundColor: Colors.white),
-          //       onPressed: () {
-          //         if (restaurantId != null) {
-          //           context.go('/restaurant/onboarding');
-          //         }
-          //       },
-          //       child: const Text('Continue Onboarding'),
-          //     ),
-          //   ),
-          // ],
         ]),
       ),
     );

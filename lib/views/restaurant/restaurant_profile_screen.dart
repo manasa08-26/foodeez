@@ -89,43 +89,39 @@ class _RestaurantProfileScreenState
   Widget build(BuildContext context) {
     final restaurantId = ref.watch(restaurantIdProvider);
     if (restaurantId == null) {
-      return const Scaffold(
-        body: Center(child: Text('No restaurant linked to this account')),
-      );
+      return const Center(
+          child: Text('No restaurant linked to this account'));
     }
 
     final restaurantAsync = ref.watch(restaurantProvider(restaurantId));
     final updateState = ref.watch(restaurantUpdateProvider);
     final isUpdating = updateState.isLoading;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        //   title: const Text('Restaurant Profile'),
-        actions: [
-          if (!_isEditing)
-            IconButton(
-              icon: const Icon(Icons.edit_rounded, color: AppColors.primary),
-              onPressed: () => setState(() => _isEditing = true),
-            ),
-        ],
-      ),
-      body: restaurantAsync.when(
+    return LoadingOverlay(
+      isLoading: isUpdating,
+      child: restaurantAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(message: e.toString()),
         data: (restaurant) {
           if (!_isEditing) {
             _populateFields(restaurant);
           }
-          return LoadingOverlay(
-            isLoading: isUpdating,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (!_isEditing)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        icon: const Icon(Icons.edit_rounded,
+                            color: AppColors.primary),
+                        onPressed: () => setState(() => _isEditing = true),
+                      ),
+                    ),
                     // Cover photo banner
                     Container(
                       height: 140,
@@ -235,8 +231,7 @@ class _RestaurantProfileScreenState
                   ],
                 ),
               ),
-            ),
-          );
+            );
         },
       ),
     );

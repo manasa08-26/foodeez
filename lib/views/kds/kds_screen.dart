@@ -86,9 +86,7 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
     final readyOrders =
         kdsState.orders.where((o) => o.status == 'READY').toList();
 
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: kdsState.isLoading && kdsState.orders.isEmpty
+    return kdsState.isLoading && kdsState.orders.isEmpty
           ? Center(
               child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation(AppColors.textPrimary)),
@@ -179,8 +177,7 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
                       ),
                     ],
                   ],
-                ),
-    );
+                );
   }
 }
 

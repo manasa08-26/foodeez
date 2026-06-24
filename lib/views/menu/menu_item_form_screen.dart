@@ -82,11 +82,7 @@ class _MenuItemFormScreenState extends ConsumerState<MenuItemFormScreen> {
         ref.watch(menuCategoriesProvider(widget.branchId));
     final menuState = ref.watch(menuNotifierProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar:
-          AppBar(title: Text(isEdit ? 'Edit Menu Item' : 'New Menu Item')),
-      body: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
@@ -218,7 +214,6 @@ class _MenuItemFormScreenState extends ConsumerState<MenuItemFormScreen> {
             ],
           ),
         ),
-      ),
     );
   }
 }

@@ -17,20 +17,21 @@ class BranchStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     final numVal = (value is num)
         ? value as num
         : (int.tryParse(value?.toString() ?? '') ?? 0);
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: highlight ? AppColors.warning : AppColors.cardBorder,
+          color: highlight ? AppColors.warning : colors.cardBorder,
           width: highlight ? 1.4 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: highlight ? 0.08 : 0.035),
+            color: colors.cardShadow,
             blurRadius: highlight ? 22 : 16,
             offset: const Offset(0, 8),
           ),
@@ -42,11 +43,11 @@ class BranchStatCard extends StatelessWidget {
           if (icon != null)
             Container(
               decoration: BoxDecoration(
-                color: AppColors.primarySurface,
+                color: colors.primarySurface,
                 borderRadius: BorderRadius.circular(14),
               ),
               padding: const EdgeInsets.all(10),
-              child: Icon(icon, color: AppColors.primary, size: 21),
+              child: Icon(icon, color: colors.primaryColor, size: 21),
             ),
           if (icon != null) const SizedBox(width: 12),
           Expanded(
@@ -54,20 +55,21 @@ class BranchStatCard extends StatelessWidget {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
                 label.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                     letterSpacing: 0.7,
-                    color: AppColors.textSecondary,
+                    color: colors.textSecondary,
                     fontWeight: FontWeight.w800,
                     fontSize: 11),
               ),
               const SizedBox(height: 6),
               Text(
                 numVal.toString(),
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 29,
                     height: 1,
                     letterSpacing: -0.9,
-                    fontWeight: FontWeight.w900),
+                    fontWeight: FontWeight.w900,
+                    color: colors.textPrimary),
               ),
             ]),
           ),

@@ -5,6 +5,7 @@ import '../core/constants/app_assets.dart';
 import '../core/constants/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/branch_provider.dart';
+import '../providers/theme_provider.dart';
 
 String _initial(String? s, [String fallback = 'A']) {
   final v = s ?? '';
@@ -22,6 +23,8 @@ class ShellScaffold extends ConsumerWidget {
     final currentPath = state.uri.path;
     final user = ref.watch(currentUserProvider);
     final canPop = context.canPop();
+    final themeMode = ref.watch(themeModeProvider);
+    final isDark = themeMode == ThemeMode.dark;
 
     return BackButtonListener(
       onBackButtonPressed: () async {
@@ -39,10 +42,20 @@ class ShellScaffold extends ConsumerWidget {
           }
         },
         child: Scaffold(
-          backgroundColor: AppColors.background,
-          appBar:
-              _buildAppBar(context, ref, location, currentPath, user, canPop),
-          body: child,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: _buildAppBar(
+            context,
+            ref,
+            location,
+            currentPath,
+            user,
+            canPop,
+            isDark,
+          ),
+          body: KeyedSubtree(
+            key: state.pageKey,
+            child: child,
+          ),
           bottomNavigationBar: _showFooterFor(location)
               ? _FooterNavigation(location: location)
               : null,
@@ -58,16 +71,18 @@ class ShellScaffold extends ConsumerWidget {
     String currentPath,
     dynamic user,
     bool canPop,
+    bool isDark,
   ) {
     final title = _titleFor(location);
     final isDashboard = location == '/dashboard';
     final showDashboardBack = !canPop && !isDashboard;
+    final titleColor = Theme.of(context).colorScheme.onSurface;
 
     return AppBar(
-      backgroundColor: AppColors.white,
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 0,
       scrolledUnderElevation: 1,
-      shadowColor: AppColors.border,
+      shadowColor: isDark ? Colors.black26 : AppColors.border,
       toolbarHeight: 64,
       leadingWidth: isDashboard ? 54 : 48,
       leading: isDashboard
@@ -82,14 +97,14 @@ class ShellScaffold extends ConsumerWidget {
             )
           : canPop
               ? IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: AppColors.textPrimary, size: 19),
+                  icon: Icon(Icons.arrow_back_ios_new_rounded,
+                      color: titleColor, size: 19),
                   onPressed: () => context.go('/dashboard'),
                 )
               : showDashboardBack
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: AppColors.textPrimary, size: 19),
+                      icon: Icon(Icons.arrow_back_ios_new_rounded,
+                          color: titleColor, size: 19),
                       onPressed: () => context.go('/dashboard'),
                     )
                   : null,
@@ -106,8 +121,8 @@ class ShellScaffold extends ConsumerWidget {
             )
           : Text(
               title,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: titleColor,
                 fontWeight: FontWeight.w900,
                 fontSize: 20,
                 letterSpacing: -0.3,
@@ -116,11 +131,19 @@ class ShellScaffold extends ConsumerWidget {
       actions: [
         if (isDashboard)
           IconButton(
-            icon: const Icon(Icons.notifications_none_rounded,
-                color: AppColors.textPrimary, size: 23),
+            icon: Icon(Icons.notifications_none_rounded,
+                color: titleColor, size: 23),
             onPressed: () {},
           ),
-        // _HeaderOnlineSwitch(location: currentPath),
+        IconButton(
+          tooltip: isDark ? 'Light mode' : 'Dark mode',
+          icon: Icon(
+            isDark ? Icons.wb_sunny_outlined : Icons.nightlight_round_outlined,
+            color: titleColor,
+            size: 23,
+          ),
+          onPressed: () => ref.read(themeModeProvider.notifier).toggle(),
+        ),
         _ProfileMenu(ref: ref, user: user),
         const SizedBox(width: 8),
       ],
@@ -139,6 +162,12 @@ class ShellScaffold extends ConsumerWidget {
   }
 
   static String _titleFor(String location) {
+    if (location.startsWith('/branches') && location.contains('/menu/item')) {
+      return location.contains('/edit') ? 'Edit Menu Item' : 'New Menu Item';
+    }
+    if (location.startsWith('/branches') && location.contains('/menu/category')) {
+      return location.contains('/edit') ? 'Edit Category' : 'New Category';
+    }
     if (location.startsWith('/branches') && location.contains('/menu')) {
       return 'Menu';
     }
@@ -214,18 +243,22 @@ class _FooterNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.adaptive;
     return SafeArea(
       top: false,
       child: Container(
         margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: AppColors.border.withValues(alpha: 0.65)),
+          border: Border.all(
+            color: colors.cardBorder.withValues(alpha: isDark ? 0.9 : 0.65),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
+              color: colors.cardShadow,
               blurRadius: 26,
               offset: const Offset(0, 8),
             ),
@@ -264,6 +297,7 @@ class _FooterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
@@ -271,7 +305,7 @@ class _FooterTile extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primarySurface : Colors.transparent,
+          color: selected ? colors.primarySurface : Colors.transparent,
           borderRadius: BorderRadius.circular(22),
         ),
         child: Column(
@@ -280,7 +314,7 @@ class _FooterTile extends StatelessWidget {
             Icon(
               selected ? item.selectedIcon : item.icon,
               size: selected ? 23 : 22,
-              color: selected ? AppColors.primary : AppColors.textSecondary,
+              color: selected ? colors.primaryColor : colors.textSecondary,
             ),
             const SizedBox(height: 4),
             Text(
@@ -292,7 +326,7 @@ class _FooterTile extends StatelessWidget {
                 fontWeight: selected ? FontWeight.w900 : FontWeight.w800,
                 height: 1,
                 letterSpacing: -0.25,
-                color: selected ? AppColors.primary : AppColors.textHint,
+                color: selected ? colors.primaryColor : colors.textHint,
               ),
             ),
           ],
@@ -367,11 +401,11 @@ class _ProfileMenu extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: CircleAvatar(
           radius: 17,
-          backgroundColor: AppColors.primarySurface,
+          backgroundColor: context.adaptive.primarySurface,
           child: Text(
             _initial(user?.displayName),
-            style: const TextStyle(
-              color: AppColors.primary,
+            style: TextStyle(
+              color: context.adaptive.primaryColor,
               fontWeight: FontWeight.w800,
               fontSize: 13,
             ),

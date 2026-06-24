@@ -69,6 +69,7 @@ class BranchControlsNotifier extends Notifier<BranchActionState> {
           .createBranch(restaurantId, data);
       if (!ref.mounted) return true;
       state = BranchActionState(data: branch);
+      ref.invalidate(branchesProvider(restaurantId));
       return true;
     } catch (e) {
       if (ref.mounted) state = BranchActionState(error: e.toString());

@@ -3,7 +3,7 @@ import 'env.dart';
 class AppConstants {
   AppConstants._();
 
-  // API — set via --dart-define=API_BASE_URL=... at build time
+  // API — https://int.foodeez.in/api/v1 (see lib/core/constants/env.dart)
   static String get baseUrl => Env.apiBaseUrl;
   static const String tokenKey = 'restaurant_onboarding_token';
   static String get encryptionKeyHex => Env.passwordEncryptionKeyHex;
@@ -20,7 +20,7 @@ class AppConstants {
   static const int orderAutoRejectSeconds = 90;
 
   // Splash
-  static const Duration splashDuration = Duration(seconds: 15);
+  static const Duration splashDuration = Duration(seconds: 5);
 
   // Allowed roles for this app
   static const String roleRestaurantAdmin = 'restaurant_admin';

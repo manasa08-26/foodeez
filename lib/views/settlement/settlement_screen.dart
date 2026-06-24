@@ -126,10 +126,8 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
     String? error,
     String? payoutsError,
   }) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: RefreshIndicator(
-        color: AppColors.primary,
+    return RefreshIndicator(
+        color: context.adaptive.primaryColor,
         onRefresh: _refresh,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -181,7 +179,7 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.textPrimary,
+                        color: context.adaptive.textPrimary,
                         letterSpacing: -0.4,
                       ),
                     ),
@@ -246,7 +244,6 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
               ),
           ],
         ),
-      ),
     );
   }
 }
@@ -259,15 +256,16 @@ class _PeriodTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: colors.cardShadow,
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -283,7 +281,7 @@ class _PeriodTabs extends StatelessWidget {
                 duration: const Duration(milliseconds: 180),
                 padding: const EdgeInsets.symmetric(vertical: 11),
                 decoration: BoxDecoration(
-                  color: active ? AppColors.primary : Colors.transparent,
+                  color: active ? colors.primaryColor : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 alignment: Alignment.center,
@@ -292,7 +290,7 @@ class _PeriodTabs extends StatelessWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w800,
-                    color: active ? AppColors.white : AppColors.textSecondary,
+                    color: active ? AppColors.white : colors.textSecondary,
                   ),
                 ),
               ),
@@ -584,12 +582,13 @@ class _MetricTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -605,7 +604,7 @@ class _MetricTile extends StatelessWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
+                    color: colors.textSecondary,
                   ),
                 ),
               ),
@@ -644,7 +643,7 @@ class _MetricTile extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textHint,
+                color: colors.textHint,
               ),
             ),
           ],
@@ -667,12 +666,13 @@ class _BreakdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -684,7 +684,7 @@ class _BreakdownCard extends StatelessWidget {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
+                  color: colors.textPrimary,
                 ),
               ),
               const Spacer(),
@@ -693,7 +693,7 @@ class _BreakdownCard extends StatelessWidget {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+                  color: colors.primaryColor,
                 ),
               ),
             ],
@@ -721,12 +721,12 @@ class _BreakdownCard extends StatelessWidget {
             labelStyle: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w900,
-              color: AppColors.textPrimary,
+              color: colors.textPrimary,
             ),
             valueStyle: GoogleFonts.plusJakartaSans(
               fontSize: 18,
               fontWeight: FontWeight.w900,
-              color: AppColors.primary,
+              color: colors.primaryColor,
             ),
           ),
           if (restaurant != null &&
@@ -757,6 +757,7 @@ class _BreakdownRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
@@ -768,7 +769,7 @@ class _BreakdownRow extends StatelessWidget {
                   GoogleFonts.plusJakartaSans(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
+                    color: colors.textSecondary,
                   ),
             ),
           ),
@@ -778,7 +779,7 @@ class _BreakdownRow extends StatelessWidget {
                 GoogleFonts.plusJakartaSans(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
-                  color: valueColor ?? AppColors.textPrimary,
+                  color: valueColor ?? colors.textPrimary,
                 ),
           ),
         ],
@@ -794,22 +795,23 @@ class _BankInfoBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     final bank = restaurant.bankName ?? 'Bank';
     final masked = _maskAccount(restaurant.bankAccountNumber);
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.primarySurface,
+        color: colors.primarySurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+        border: Border.all(color: colors.primaryColor.withValues(alpha: 0.18)),
       ),
       child: Row(
         children: [
           Icon(
             Icons.info_outline_rounded,
             size: 18,
-            color: AppColors.primary.withValues(alpha: 0.85),
+            color: colors.primaryColor.withValues(alpha: 0.9),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -818,7 +820,7 @@ class _BankInfoBanner extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w600,
-                color: AppColors.primaryDark,
+                color: colors.isDark ? colors.textPrimary : AppColors.primaryDark,
                 height: 1.35,
               ),
             ),
@@ -842,6 +844,7 @@ class _RecentPayoutTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     final bank = payout.bankName ?? fallbackBank ?? 'Bank';
     final account = payout.accountLast4 != null
         ? '•••• ${payout.accountLast4}'
@@ -851,9 +854,9 @@ class _RecentPayoutTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.cardBorder),
       ),
       child: Row(
         children: [
@@ -861,12 +864,12 @@ class _RecentPayoutTile extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: AppColors.primarySurface,
+              color: colors.primarySurface,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.credit_card_rounded,
-              color: AppColors.primary,
+              color: colors.primaryColor,
               size: 20,
             ),
           ),
@@ -882,7 +885,7 @@ class _RecentPayoutTile extends StatelessWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 3),
@@ -893,7 +896,7 @@ class _RecentPayoutTile extends StatelessWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.textSecondary,
+                    color: colors.textSecondary,
                   ),
                 ),
               ],
@@ -907,14 +910,14 @@ class _RecentPayoutTile extends StatelessWidget {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
+                  color: colors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.successSurface,
+                  color: colors.successSurface,
                   borderRadius: BorderRadius.circular(99),
                 ),
                 child: Text(
@@ -941,24 +944,25 @@ class _EmptyPayoutsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.cardBorder),
       ),
       child: Column(
         children: [
-          const Icon(Icons.receipt_long_outlined,
-              size: 40, color: AppColors.textHint),
+          Icon(Icons.receipt_long_outlined,
+              size: 40, color: colors.textHint),
           const SizedBox(height: 10),
           Text(
             'No recent payouts yet',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
+              color: colors.textSecondary,
             ),
           ),
           if (restaurant != null &&
@@ -981,9 +985,10 @@ class _LoadingBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
-      child: const Center(
+      child: Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation(AppColors.primary),
+          valueColor:
+              AlwaysStoppedAnimation(context.adaptive.primaryColor),
         ),
       ),
     );
@@ -997,10 +1002,11 @@ class _ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.errorSurface,
+        color: colors.errorSurface,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(

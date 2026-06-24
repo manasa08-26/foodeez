@@ -64,11 +64,7 @@ class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
   Widget build(BuildContext context) {
     final menuState = ref.watch(menuNotifierProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      // appBar: AppBar(
-      //     title: Text(isEdit ? 'Edit Category' : 'New Category')),
-      body: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
@@ -118,7 +114,6 @@ class _CategoryFormScreenState extends ConsumerState<CategoryFormScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 }

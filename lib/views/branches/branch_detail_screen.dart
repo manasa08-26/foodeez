@@ -8,28 +8,24 @@ class BranchDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      // appBar: AppBar(title: const Text('Branch')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _TileAction(
-              icon: Icons.menu_book_rounded,
-              title: 'Menu Management',
-              subtitle: 'Add, edit, and manage menu items',
-              onTap: () => context.go('/branches/$branchId/menu'),
-            ),
-            const SizedBox(height: 12),
-            _TileAction(
-              icon: Icons.tune_rounded,
-              title: 'Branch Controls',
-              subtitle: 'Hours, online status, busy mode',
-              onTap: () => context.go('/branches/$branchId/controls'),
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          _TileAction(
+            icon: Icons.menu_book_rounded,
+            title: 'Menu Management',
+            subtitle: 'Add, edit, and manage menu items',
+            onTap: () => context.go('/branches/$branchId/menu'),
+          ),
+          const SizedBox(height: 12),
+          _TileAction(
+            icon: Icons.tune_rounded,
+            title: 'Branch Controls',
+            subtitle: 'Hours, online status, busy mode',
+            onTap: () => context.go('/branches/$branchId/controls'),
+          ),
+        ],
       ),
     );
   }

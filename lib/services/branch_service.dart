@@ -27,7 +27,7 @@ class BranchService {
     try {
       final res =
           await _dio.get(ApiEndpoints.branch(restaurantId, branchId));
-      return BranchModel.fromJson(res.data);
+      return BranchModel.fromJson(_unwrapMap(res.data));
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -38,7 +38,7 @@ class BranchService {
     try {
       final res =
           await _dio.post(ApiEndpoints.branches(restaurantId), data: data);
-      return BranchModel.fromJson(res.data);
+      return BranchModel.fromJson(_unwrapMap(res.data));
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -74,5 +74,19 @@ class BranchService {
       }
     }
     return [];
+  }
+
+  static Map<String, dynamic> _unwrapMap(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      if (data['data'] is Map) {
+        return Map<String, dynamic>.from(data['data'] as Map);
+      }
+      if (data['branch'] is Map) {
+        return Map<String, dynamic>.from(data['branch'] as Map);
+      }
+      return data;
+    }
+    if (data is Map) return Map<String, dynamic>.from(data);
+    return {};
   }
 }

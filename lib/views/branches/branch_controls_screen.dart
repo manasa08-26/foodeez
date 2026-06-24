@@ -67,10 +67,7 @@ class _BranchControlsScreenState extends ConsumerState<BranchControlsScreen> {
     final controlsState = ref.watch(branchControlsProvider);
     final isControlsLoading = controlsState.isLoading;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      //appBar: AppBar(title: const Text('Branch Controls')),
-      body: branchAsync.when(
+    return branchAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(message: e.toString()),
         data: (branch) {
@@ -181,7 +178,6 @@ class _BranchControlsScreenState extends ConsumerState<BranchControlsScreen> {
             ),
           );
         },
-      ),
     );
   }
 }

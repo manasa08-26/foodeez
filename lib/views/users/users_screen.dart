@@ -38,22 +38,15 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
   Widget build(BuildContext context) {
     final restaurantId = ref.watch(restaurantIdProvider);
     if (restaurantId == null) {
-      return const Scaffold(body: Center(child: Text('No restaurant linked')));
+      return const Center(child: Text('No restaurant linked'));
     }
 
     final usersAsync = ref.watch(restaurantUsersProvider(restaurantId));
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      //appBar: AppBar(title: const Text('Team Members')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddUserSheet(restaurantId),
-        icon: const Icon(Icons.person_add_rounded),
-        label: const Text('Add Member'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-      ),
-      body: usersAsync.when(
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: usersAsync.when(
         loading: () => const FullPageLoader(),
         error: (e, _) => ErrorView(message: e.toString()),
         data: (users) => users.isEmpty
@@ -116,7 +109,20 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
                   );
                 },
               ),
-      ),
+          ),
+        ),
+        Positioned(
+          right: 16,
+          bottom: 88,
+          child: FloatingActionButton.extended(
+            onPressed: () => _showAddUserSheet(restaurantId),
+            icon: const Icon(Icons.person_add_rounded),
+            label: const Text('Add Member'),
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }

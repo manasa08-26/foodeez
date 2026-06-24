@@ -89,50 +89,132 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         child: SafeArea(
           child: Column(
             children: [
-              const SizedBox(height: 18),
-              FadeTransition(
-                opacity: _textFade,
-                child: const _PartnerPortalBadge(),
+              Padding(
+                padding: const EdgeInsets.only(top: 18),
+                child: FadeTransition(
+                  opacity: _textFade,
+                  child: const _PartnerPortalBadge(),
+                ),
               ),
-              const Spacer(),
-              FadeTransition(
-                opacity: _logoFade,
-                child: ScaleTransition(
-                  scale: _logoScale,
-                  child: SizedBox(
-                    width: 220,
-                    height: 220,
-                    child: Stack(
-                      alignment: Alignment.center,
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        AnimatedBuilder(
-                          animation: _orbitCtrl,
-                          builder: (_, __) => CustomPaint(
-                            size: const Size(220, 220),
-                            painter: _OrbitRingsPainter(
-                              rotation: _orbitCtrl.value * 2 * math.pi,
+                        FadeTransition(
+                          opacity: _logoFade,
+                          child: ScaleTransition(
+                            scale: _logoScale,
+                            child: SizedBox(
+                              width: 220,
+                              height: 220,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  AnimatedBuilder(
+                                    animation: _orbitCtrl,
+                                    builder: (_, __) => CustomPaint(
+                                      size: const Size(220, 220),
+                                      painter: _OrbitRingsPainter(
+                                        rotation:
+                                            _orbitCtrl.value * 2 * math.pi,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 118,
+                                    height: 118,
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.white,
+                                      borderRadius: BorderRadius.circular(30),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.primary
+                                              .withValues(alpha: 0.14),
+                                          blurRadius: 30,
+                                          offset: const Offset(0, 12),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Image.asset(
+                                      AppAssets.profileLogo,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                        Container(
-                          width: 118,
-                          height: 118,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color:
-                                    AppColors.primary.withValues(alpha: 0.14),
-                                blurRadius: 30,
-                                offset: const Offset(0, 12),
-                              ),
-                            ],
-                          ),
-                          child: Image.asset(
-                            AppAssets.profileLogo,
-                            fit: BoxFit.contain,
+                        const SizedBox(height: 28),
+                        SlideTransition(
+                          position: _textSlide,
+                          child: FadeTransition(
+                            opacity: _textFade,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'FooDeeZ',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.primary,
+                                    letterSpacing: -1,
+                                    height: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'RESTAURANT PARTNER PORTAL',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.primary
+                                        .withValues(alpha: 0.62),
+                                    letterSpacing: 2.8,
+                                  ),
+                                ),
+                                const SizedBox(height: 22),
+                                RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w900,
+                                      color: AppColors.textPrimary,
+                                      letterSpacing: -0.6,
+                                      height: 1.1,
+                                    ),
+                                    children: const [
+                                      TextSpan(text: 'Tap. '),
+                                      TextSpan(
+                                        text: 'Eat.',
+                                        style: TextStyle(
+                                            color: AppColors.primary),
+                                      ),
+                                      TextSpan(text: ' Repeat.'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Order in seconds · Delivered fast',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -140,128 +222,71 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   ),
                 ),
               ),
-              const SizedBox(height: 28),
-              SlideTransition(
-                position: _textSlide,
-                child: FadeTransition(
-                  opacity: _textFade,
+              FadeTransition(
+                opacity: _bottomFade,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 28),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        'FooDeeZ',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.primary,
-                          letterSpacing: -1,
-                          height: 1,
+                      SizedBox(
+                        width: 180,
+                        height: 4,
+                        child: AnimatedBuilder(
+                          animation: _progressCtrl,
+                          builder: (_, __) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(99),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    color: AppColors.primary
+                                        .withValues(alpha: 0.12),
+                                  ),
+                                  FractionallySizedBox(
+                                    widthFactor:
+                                        0.35 + (_progressCtrl.value * 0.55),
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        gradient: AppColors.primaryGradient,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 14),
                       Text(
-                        'RESTAURANT PARTNER PORTAL',
+                        'READY TO SERVE',
+                        textAlign: TextAlign.center,
                         style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary.withValues(alpha: 0.62),
-                          letterSpacing: 2.8,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary.withValues(alpha: 0.7),
+                          letterSpacing: 2.4,
                         ),
                       ),
-                      const SizedBox(height: 22),
-                      RichText(
-                        text: TextSpan(
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.textPrimary,
-                            letterSpacing: -0.6,
-                            height: 1.1,
-                          ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 8,
+                          runSpacing: 8,
                           children: const [
-                            TextSpan(text: 'Tap. '),
-                            TextSpan(
-                              text: 'Eat.',
-                              style: TextStyle(color: AppColors.primary),
-                            ),
-                            TextSpan(text: ' Repeat.'),
+                            _FeatureChip(label: '👇 Tap to order'),
+                            _FeatureChip(label: '🍔 Your favourites'),
+                            _FeatureChip(label: '🛵 Fast delivery'),
                           ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Order in seconds · Delivered fast',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const Spacer(),
-              FadeTransition(
-                opacity: _bottomFade,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: 180,
-                      height: 4,
-                      child: AnimatedBuilder(
-                        animation: _progressCtrl,
-                        builder: (_, __) {
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(99),
-                            child: Stack(
-                              children: [
-                                Container(
-                                  color:
-                                      AppColors.primary.withValues(alpha: 0.12),
-                                ),
-                                FractionallySizedBox(
-                                  widthFactor: 0.35 +
-                                      (_progressCtrl.value * 0.55),
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      gradient: AppColors.primaryGradient,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      'READY TO SERVE',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primary.withValues(alpha: 0.7),
-                        letterSpacing: 2.4,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: const [
-                          _FeatureChip(label: '👇 Tap to order'),
-                          _FeatureChip(label: '🍔 Your favourites'),
-                          _FeatureChip(label: '🛵 Fast delivery'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 28),
             ],
           ),
         ),

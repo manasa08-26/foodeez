@@ -46,27 +46,36 @@ class _CreateBranchScreenState extends ConsumerState<CreateBranchScreen> {
     if (restaurantId == null) return;
 
     final ok = await ref.read(branchControlsProvider.notifier).createBranch(
-      restaurantId,
-      {
-        'name': _nameCtrl.text.trim(),
-        'address': _addressCtrl.text.trim(),
-        'city': _cityCtrl.text.trim(),
-        'state': _stateCtrl.text.trim(),
-        'zipCode': _zipCtrl.text.trim(),
-        'openingTime': _openCtrl.text.trim(),
-        'closingTime': _closeCtrl.text.trim(),
-      },
-    );
+          restaurantId,
+          {
+            'name': _nameCtrl.text.trim(),
+            'address': _addressCtrl.text.trim(),
+            'city': _cityCtrl.text.trim(),
+            'state': _stateCtrl.text.trim(),
+            'zipCode': _zipCtrl.text.trim(),
+            'latitude': 0,
+            'longitude': 0,
+            'openingTime': _openCtrl.text.trim(),
+            'closingTime': _closeCtrl.text.trim(),
+            'isOnline': false,
+          },
+        );
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(ok ? 'Branch created!' : 'Failed to create branch'),
-          backgroundColor: ok ? AppColors.success : AppColors.error,
-          behavior: SnackBarBehavior.floating,
+    if (!mounted) return;
+
+    final error = ref.read(branchControlsProvider).error;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok ? 'Branch created!' : (error ?? 'Failed to create branch'),
         ),
-      );
-      if (ok) context.go('/branches');
+        backgroundColor: ok ? AppColors.success : AppColors.error,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+    if (ok) {
+      ref.invalidate(branchesProvider(restaurantId));
+      context.go('/branches');
     }
   }
 
@@ -74,10 +83,7 @@ class _CreateBranchScreenState extends ConsumerState<CreateBranchScreen> {
   Widget build(BuildContext context) {
     final branchState = ref.watch(branchControlsProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      // appBar: AppBar(title: const Text('New Branch')),
-      body: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
@@ -98,6 +104,8 @@ class _CreateBranchScreenState extends ConsumerState<CreateBranchScreen> {
                   label: 'Address',
                   controller: _addressCtrl,
                   maxLines: 2,
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Address is required' : null,
                   prefixIcon: const Icon(Icons.location_on_outlined,
                       color: AppColors.textHint, size: 20),
                 ),
@@ -119,6 +127,8 @@ class _CreateBranchScreenState extends ConsumerState<CreateBranchScreen> {
                       child: AppTextField(
                         label: 'State',
                         controller: _stateCtrl,
+                        validator: (v) =>
+                            v == null || v.isEmpty ? 'State is required' : null,
                       ),
                     ),
                   ],
@@ -128,6 +138,8 @@ class _CreateBranchScreenState extends ConsumerState<CreateBranchScreen> {
                   label: 'ZIP / Pincode',
                   controller: _zipCtrl,
                   keyboardType: TextInputType.number,
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'ZIP is required' : null,
                 ),
               ]),
               const SizedBox(height: 16),
@@ -167,7 +179,6 @@ class _CreateBranchScreenState extends ConsumerState<CreateBranchScreen> {
             ],
           ),
         ),
-      ),
     );
   }
 }
@@ -179,12 +190,15 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isDark ? AppColors.darkSurface : AppColors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(
+          color: isDark ? AppColors.darkCardBorder : AppColors.cardBorder,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
