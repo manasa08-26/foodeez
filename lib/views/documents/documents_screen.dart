@@ -218,13 +218,13 @@ class _DocumentCard extends ConsumerWidget {
               onPressed:
                   isUploading ? null : () => _pickAndUpload(context, ref),
               icon: isUploading
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor:
-                              AlwaysStoppedAnimation(AppColors.primary)))
+                              AlwaysStoppedAnimation(colors.primaryColor)))
                   : const Icon(Icons.upload_rounded, size: 18),
               label: Text(isUploaded ? 'Re-upload' : 'Upload'),
               style: TextButton.styleFrom(foregroundColor: colors.primaryColor),

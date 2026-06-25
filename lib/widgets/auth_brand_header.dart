@@ -1,40 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../core/constants/app_assets.dart';
 import '../core/constants/app_colors.dart';
+import 'partner_logo.dart';
 
 class AuthBrandHeader extends StatelessWidget {
   const AuthBrandHeader({
     super.key,
-    this.logoSize = 88,
     this.compact = false,
   });
 
-  final double logoSize;
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
+    final accent = colors.primaryColor;
+
     return Column(
       children: [
         Container(
-          width: logoSize,
-          height: logoSize,
-          padding: const EdgeInsets.all(14),
+          padding: EdgeInsets.all(compact ? 8 : 10),
           decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(compact ? 22 : 26),
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(compact ? 18 : 22),
+            border: Border.all(color: colors.cardBorder),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.12),
+                color: accent.withValues(alpha: 0.12),
                 blurRadius: 28,
                 offset: const Offset(0, 10),
               ),
             ],
           ),
-          child: Image.asset(
-            AppAssets.profileLogo,
-            fit: BoxFit.contain,
+          child: PartnerLogo.custom(
+            width: compact ? 40 : 48,
+            height: compact ? 40 : 48,
           ),
         ),
         SizedBox(height: compact ? 14 : 18),
@@ -43,7 +43,7 @@ class AuthBrandHeader extends StatelessWidget {
           style: GoogleFonts.plusJakartaSans(
             fontSize: compact ? 30 : 34,
             fontWeight: FontWeight.w900,
-            color: AppColors.primary,
+            color: accent,
             letterSpacing: -0.8,
             height: 1,
           ),
@@ -54,7 +54,7 @@ class AuthBrandHeader extends StatelessWidget {
           style: GoogleFonts.plusJakartaSans(
             fontSize: compact ? 10.5 : 11,
             fontWeight: FontWeight.w700,
-            color: AppColors.primary.withValues(alpha: 0.62),
+            color: accent.withValues(alpha: 0.62),
             letterSpacing: 2.6,
           ),
         ),

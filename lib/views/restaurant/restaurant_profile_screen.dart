@@ -106,6 +106,7 @@ class _RestaurantProfileScreenState
           if (!_isEditing) {
             _populateFields(restaurant);
           }
+          final colors = context.adaptive;
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Form(
@@ -117,8 +118,8 @@ class _RestaurantProfileScreenState
                     Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(
-                        icon: const Icon(Icons.edit_rounded,
-                            color: AppColors.primary),
+                        icon: Icon(Icons.edit_rounded,
+                            color: colors.primaryColor),
                         onPressed: () => setState(() => _isEditing = true),
                       ),
                     ),
@@ -127,7 +128,7 @@ class _RestaurantProfileScreenState
                       height: 140,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        gradient: AppColors.cardGradient,
+                        gradient: colors.cardGradient,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Stack(

@@ -70,9 +70,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(authProvider);
+    final colors = context.adaptive;
+    final accent = colors.primaryColor;
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: colors.background,
       body: AuthScreenBackground(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -84,14 +86,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: colors.surface,
                     borderRadius: BorderRadius.circular(28),
                     border: Border.all(
-                      color: AppColors.cardBorder.withValues(alpha: 0.9),
+                      color: colors.cardBorder,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.08),
+                        color: accent.withValues(alpha: 0.08),
                         blurRadius: 32,
                         offset: const Offset(0, 12),
                       ),
@@ -107,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
-                            color: AppColors.textPrimary,
+                            color: colors.textPrimary,
                             letterSpacing: -0.5,
                           ),
                         ),
@@ -117,7 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.textSecondary,
+                            color: colors.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -148,7 +150,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               _obscurePassword
                                   ? Icons.visibility_off_outlined
                                   : Icons.visibility_outlined,
-                              color: AppColors.primary,
+                              color: accent,
                               size: 20,
                             ),
                             onPressed: () => setState(
@@ -170,10 +172,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               width: 24,
                               child: Checkbox(
                                 value: _rememberMe,
-                                activeColor: AppColors.primary,
+                                activeColor: accent,
                                 side: BorderSide(
-                                  color:
-                                      AppColors.border.withValues(alpha: 0.9),
+                                  color: colors.cardBorder,
                                 ),
                                 onChanged: (v) =>
                                     setState(() => _rememberMe = v ?? false),
@@ -185,7 +186,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textSecondary,
+                                color: colors.textSecondary,
                               ),
                             ),
                             const Spacer(),
@@ -201,7 +202,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.primary,
+                                  color: accent,
                                 ),
                               ),
                             ),
@@ -213,8 +214,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color:
-                                    AppColors.primary.withValues(alpha: 0.28),
+                                color: accent.withValues(alpha: 0.28),
                                 blurRadius: 18,
                                 offset: const Offset(0, 8),
                               ),
@@ -233,9 +233,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: Divider(
-                                color: AppColors.border.withValues(alpha: 0.9),
-                              ),
+                              child: Divider(color: colors.cardBorder),
                             ),
                             Padding(
                               padding:
@@ -245,15 +243,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textHint,
+                                  color: colors.textHint,
                                   letterSpacing: 1.2,
                                 ),
                               ),
                             ),
                             Expanded(
-                              child: Divider(
-                                color: AppColors.border.withValues(alpha: 0.9),
-                              ),
+                              child: Divider(color: colors.cardBorder),
                             ),
                           ],
                         ),
@@ -284,17 +280,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: AppColors.primarySurface,
+                    color: colors.primarySurface,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.12),
+                      color: accent.withValues(alpha: 0.12),
                     ),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.info_outline_rounded,
-                        color: AppColors.primary.withValues(alpha: 0.85),
+                        color: accent.withValues(alpha: 0.85),
                         size: 18,
                       ),
                       const SizedBox(width: 10),
@@ -304,7 +300,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.primaryDark,
+                            color: colors.isDark
+                                ? colors.textSecondary
+                                : AppColors.primaryDark,
                           ),
                         ),
                       ),
@@ -343,6 +341,9 @@ class _LoginField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
+    final accent = colors.primaryColor;
+
     return TextFormField(
       controller: controller,
       validator: validator,
@@ -352,36 +353,36 @@ class _LoginField extends StatelessWidget {
       style: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: AppColors.textPrimary,
+        color: colors.textPrimary,
       ),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: GoogleFonts.plusJakartaSans(
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          color: AppColors.textHint,
+          color: colors.textHint,
         ),
         filled: true,
-        fillColor: AppColors.white,
+        fillColor: colors.surfaceHighlight,
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        prefixIcon: Icon(prefixIcon, color: AppColors.primary, size: 20),
+        prefixIcon: Icon(prefixIcon, color: accent, size: 20),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-            color: AppColors.primary.withValues(alpha: 0.18),
+            color: accent.withValues(alpha: 0.18),
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-            color: AppColors.primary.withValues(alpha: 0.18),
+            color: accent.withValues(alpha: 0.18),
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
+          borderSide: BorderSide(color: accent, width: 1.6),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -404,12 +405,14 @@ class _SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
+
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.textPrimary,
-        backgroundColor: AppColors.white,
-        side: BorderSide(color: AppColors.border.withValues(alpha: 0.95)),
+        foregroundColor: colors.textPrimary,
+        backgroundColor: colors.surfaceHighlight,
+        side: BorderSide(color: colors.cardBorder),
         padding: const EdgeInsets.symmetric(vertical: 14),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),

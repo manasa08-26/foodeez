@@ -394,22 +394,39 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             // Toggle: switch between showing all branches and only online branches
           ]),
         ]),
-        GestureDetector(
-          onTap: () => context.go('/branches'),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF6DD),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: const Color(0xFFF0C35A)),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => context.go('/branches'),
+            borderRadius: BorderRadius.circular(999),
+            splashColor: const Color(0xFFF0C35A).withValues(alpha: 0.18),
+            highlightColor: const Color(0xFFF0C35A).withValues(alpha: 0.12),
+            child: Ink(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF6DD),
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: const Color(0xFFF0C35A)),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Manage',
+                    style: TextStyle(
+                      color: Color(0xFFB9A07A),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward,
+                    size: 16,
+                    color: Color(0xFFB9A07A),
+                  ),
+                ],
+              ),
             ),
-            child: const Row(children: [
-              Text('Manage',
-                  style: TextStyle(
-                      color: Color(0xFFB9A07A), fontWeight: FontWeight.bold)),
-              SizedBox(width: 4),
-              Icon(Icons.arrow_forward, size: 16, color: Color(0xFFB9A07A)),
-            ]),
           ),
         ),
       ]),

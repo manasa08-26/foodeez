@@ -25,13 +25,15 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDanger ? AppColors.error : AppColors.primary;
+    final colors = context.adaptive;
+    final color = isDanger ? AppColors.error : colors.primaryColor;
+    final onColor = colors.isDark ? AppColors.darkBackground : Colors.white;
 
     final child = isLoading
-        ? const SizedBox(
+        ? SizedBox(
             width: 20,
             height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            child: CircularProgressIndicator(strokeWidth: 2, color: onColor),
           )
         : Row(
             mainAxisSize: MainAxisSize.min,
@@ -52,7 +54,8 @@ class AppButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             foregroundColor: color,
             side: BorderSide(color: color),
-            padding: padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            padding:
+                padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           child: child,
@@ -66,8 +69,9 @@ class AppButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          foregroundColor: Colors.white,
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          foregroundColor: onColor,
+          padding:
+              padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 0,
         ),

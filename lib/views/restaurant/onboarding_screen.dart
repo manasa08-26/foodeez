@@ -10,6 +10,7 @@ class OnboardingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.adaptive;
     final restaurantId = ref.watch(restaurantIdProvider);
     if (restaurantId == null) {
       return const Center(child: Text('No restaurant linked'));
@@ -28,16 +29,18 @@ class OnboardingScreen extends ConsumerWidget {
             _Step('Menu Setup', 'Add menu categories and items', status.step4Complete),
             _Step('Activation', 'Go live and start accepting orders', status.step5Complete),
           ];
+          final heroText = Colors.white;
+          final heroSubtext = Colors.white.withValues(alpha: 0.7);
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Progress summary
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
+                    gradient: colors.primaryGradient,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
@@ -46,18 +49,18 @@ class OnboardingScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Onboarding Progress',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: heroText,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           Text(
                             '${status.completedSteps}/5',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: heroText,
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
                             ),
@@ -69,23 +72,27 @@ class OnboardingScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(8),
                         child: LinearProgressIndicator(
                           value: status.completedSteps / 5,
-                          backgroundColor: Colors.white.withValues(alpha: 0.3),
-                          valueColor: const AlwaysStoppedAnimation(Colors.white),
+                          backgroundColor: heroText.withValues(alpha: 0.3),
+                          valueColor: AlwaysStoppedAnimation(heroText),
                           minHeight: 8,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         '${(status.completedSteps / 5 * 100).round()}% complete',
-                        style: const TextStyle(color: Colors.white70, fontSize: 13),
+                        style: TextStyle(color: heroSubtext, fontSize: 13),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'Steps',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 ...steps.asMap().entries.map(
@@ -120,19 +127,20 @@ class _StepCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     final isComplete = data.isComplete;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: isCurrent
-              ? AppColors.primary
+              ? colors.primaryColor
               : isComplete
                   ? AppColors.success
-                  : AppColors.cardBorder,
+                  : colors.cardBorder,
           width: isCurrent ? 2 : 1,
         ),
       ),
@@ -143,10 +151,10 @@ class _StepCard extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               color: isComplete
-                  ? AppColors.successSurface
+                  ? colors.successSurface
                   : isCurrent
-                      ? AppColors.primarySurface
-                      : AppColors.background,
+                      ? colors.primarySurface
+                      : colors.surfaceHighlight,
               shape: BoxShape.circle,
             ),
             child: isComplete
@@ -158,8 +166,8 @@ class _StepCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         color: isCurrent
-                            ? AppColors.primary
-                            : AppColors.textHint,
+                            ? colors.primaryColor
+                            : colors.textHint,
                       ),
                     ),
                   ),
@@ -177,15 +185,15 @@ class _StepCard extends StatelessWidget {
                     color: isComplete
                         ? AppColors.success
                         : isCurrent
-                            ? AppColors.primary
-                            : AppColors.textPrimary,
+                            ? colors.primaryColor
+                            : colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   data.description,
-                  style: const TextStyle(
-                      fontSize: 12, color: AppColors.textSecondary),
+                  style: TextStyle(
+                      fontSize: 12, color: colors.textSecondary),
                 ),
               ],
             ),
@@ -195,15 +203,15 @@ class _StepCard extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.primarySurface,
+                color: colors.primarySurface,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
+              child: Text(
                 'Current',
                 style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.primary),
+                    color: colors.primaryColor),
               ),
             ),
         ],

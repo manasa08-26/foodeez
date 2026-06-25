@@ -34,21 +34,23 @@ class _Spinner extends StatelessWidget {
   const _Spinner();
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: colors.cardShadow,
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: const CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(colors.primaryColor),
         strokeWidth: 3,
       ),
     );
@@ -60,11 +62,12 @@ class FullPageLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: AppColors.background,
+    final colors = context.adaptive;
+    return Scaffold(
+      backgroundColor: colors.background,
       body: Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          valueColor: AlwaysStoppedAnimation<Color>(colors.primaryColor),
         ),
       ),
     );
@@ -79,6 +82,7 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -90,7 +94,7 @@ class ErrorView extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: colors.textSecondary),
             ),
             if (onRetry != null) ...[
               const SizedBox(height: 16),
@@ -98,12 +102,6 @@ class ErrorView extends StatelessWidget {
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh, size: 18),
                 label: const Text('Retry'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
               ),
             ],
           ],

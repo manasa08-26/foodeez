@@ -298,6 +298,7 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
   }
 
   Widget _buildActions(OrderModel order) {
+    final colors = context.adaptive;
     if (order.status == 'PLACED') {
       return Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
@@ -318,8 +319,9 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color:
-                            _prepTime == t ? AppColors.primary : Colors.white12,
+                        color: _prepTime == t
+                            ? colors.primaryColor
+                            : Colors.white12,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(

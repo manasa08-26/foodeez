@@ -13,29 +13,45 @@ class AuthScreenBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent =
+        isDark ? AppColors.primaryLight : AppColors.primary;
+
     return SizedBox.expand(
       child: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF3ECFF),
-              Color(0xFFFAF7FF),
-              Color(0xFFFFFFFF),
-            ],
-            stops: [0.0, 0.45, 1.0],
-          ),
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF0F0E12),
+                    Color(0xFF17161C),
+                    Color(0xFF1F1E25),
+                  ],
+                  stops: [0.0, 0.45, 1.0],
+                )
+              : const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFFF3ECFF),
+                    Color(0xFFFAF7FF),
+                    Color(0xFFFFFFFF),
+                  ],
+                  stops: [0.0, 0.45, 1.0],
+                ),
         ),
         child: Stack(
           children: [
-            if (showDotGrid) const Positioned.fill(child: _DotGridPattern()),
+            if (showDotGrid)
+              Positioned.fill(child: _DotGridPattern(accent: accent)),
             Positioned(
               top: -90,
               right: -70,
               child: _GlowOrb(
                 size: 240,
-                color: AppColors.primary.withValues(alpha: 0.09),
+                color: accent.withValues(alpha: isDark ? 0.12 : 0.09),
               ),
             ),
             Positioned(
@@ -43,7 +59,8 @@ class AuthScreenBackground extends StatelessWidget {
               left: -50,
               child: _GlowOrb(
                 size: 200,
-                color: AppColors.accent.withValues(alpha: 0.1),
+                color: (isDark ? AppColors.accent : AppColors.accent)
+                    .withValues(alpha: 0.1),
               ),
             ),
             child,
@@ -71,19 +88,25 @@ class _GlowOrb extends StatelessWidget {
 }
 
 class _DotGridPattern extends StatelessWidget {
-  const _DotGridPattern();
+  const _DotGridPattern({required this.accent});
+
+  final Color accent;
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(painter: _DotGridPainter());
+    return CustomPaint(painter: _DotGridPainter(accent: accent));
   }
 }
 
 class _DotGridPainter extends CustomPainter {
+  _DotGridPainter({required this.accent});
+
+  final Color accent;
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.primary.withValues(alpha: 0.06)
+      ..color = accent.withValues(alpha: 0.06)
       ..style = PaintingStyle.fill;
 
     const spacing = 22.0;
@@ -95,5 +118,6 @@ class _DotGridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _DotGridPainter oldDelegate) =>
+      oldDelegate.accent != accent;
 }

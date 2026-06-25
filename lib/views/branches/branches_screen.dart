@@ -21,8 +21,9 @@ class BranchesScreen extends ConsumerWidget {
     }
 
     final branchesAsync = ref.watch(branchesProvider(restaurantId));
+    final colors = context.adaptive;
     final colorScheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = colors.isDark;
     final cardColor = isDark ? AppColors.darkSurface : AppColors.white;
     final borderColor = isDark ? AppColors.darkCardBorder : AppColors.cardBorder;
     final titleColor = colorScheme.onSurface;
@@ -47,7 +48,7 @@ class BranchesScreen extends ConsumerWidget {
                 onAction: () => context.go('/branches/new'),
               )
             : RefreshIndicator(
-                color: AppColors.primary,
+                color: colors.primaryColor,
                 onRefresh: () =>
                     ref.refresh(branchesProvider(restaurantId).future),
                 child: ListView.separated(
@@ -87,9 +88,9 @@ class BranchesScreen extends ConsumerWidget {
                                         : AppColors.primarySurface,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.store_mall_directory_rounded,
-                                    color: AppColors.primary,
+                                    color: colors.primaryColor,
                                     size: 22,
                                   ),
                                 ),
@@ -179,8 +180,8 @@ class BranchesScreen extends ConsumerWidget {
             onPressed: () => context.go('/branches/new'),
             icon: const Icon(Icons.add),
             label: const Text('Add Branch'),
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
+            backgroundColor: colors.primaryColor,
+            foregroundColor: AppColors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
             ),
@@ -199,24 +200,24 @@ class _Action extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colors = context.adaptive;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.darkPrimarySurface : AppColors.primarySurface,
+          color: colors.primarySurface,
           borderRadius: BorderRadius.circular(999),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 14, color: AppColors.primary),
+            Icon(icon, size: 14, color: colors.primaryColor),
             const SizedBox(width: 6),
             Text(label,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary)),
+                    color: colors.primaryColor)),
           ],
         ),
       ),

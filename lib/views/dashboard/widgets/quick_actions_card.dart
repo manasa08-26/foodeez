@@ -8,9 +8,10 @@ class QuickActionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     final actions = [
       _QA(Icons.store_mall_directory_rounded, 'Branches', '/branches',
-          AppColors.primary),
+          colors.primaryColor),
       _QA(Icons.menu_book_rounded, 'Menu', '/branches', AppColors.accent),
       _QA(Icons.receipt_long_rounded, 'Orders', '/orders', AppColors.warning),
       _QA(Icons.kitchen_rounded, 'KDS', '/kds', AppColors.error),

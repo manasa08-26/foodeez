@@ -196,7 +196,7 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
+                          color: context.adaptive.primaryColor,
                         ),
                       ),
                     ),
@@ -323,11 +323,7 @@ class _NetPayoutHeroCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF7B3FE4), Color(0xFF4C1D95)],
-        ),
+        gradient: AppColors.payoutHeroGradient,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -507,58 +503,46 @@ class _MetricsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     final feeRate = summary.platformFeeRate > 0
         ? '${summary.platformFeeRate.toStringAsFixed(0)}% of gross'
         : 'Platform fee';
 
-    return Column(
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: 1.24,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: _MetricTile(
-                title: 'Gross Revenue',
-                value: AppFormatters.currency(summary.grossRevenue),
-                subtitle: null,
-                color: AppColors.primary,
-                icon: Icons.currency_rupee_rounded,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _MetricTile(
-                title: 'Platform Fee',
-                value: '- ${AppFormatters.currency(summary.platformFee)}',
-                subtitle: feeRate,
-                color: AppColors.error,
-                icon: Icons.percent_rounded,
-              ),
-            ),
-          ],
+        _MetricTile(
+          title: 'Gross Revenue',
+          value: AppFormatters.currency(summary.grossRevenue),
+          subtitle: null,
+          color: colors.primaryColor,
+          icon: Icons.currency_rupee_rounded,
         ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _MetricTile(
-                title: 'Delivered Orders',
-                value: summary.orderCount.toString(),
-                subtitle: null,
-                color: AppColors.info,
-                icon: Icons.local_shipping_outlined,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _MetricTile(
-                title: 'Avg. Order',
-                value: AppFormatters.currency(summary.avgOrderValue),
-                subtitle: null,
-                color: AppColors.success,
-                icon: Icons.trending_up_rounded,
-              ),
-            ),
-          ],
+        _MetricTile(
+          title: 'Platform Fee',
+          value: '- ${AppFormatters.currency(summary.platformFee)}',
+          subtitle: feeRate,
+          color: AppColors.error,
+          icon: Icons.percent_rounded,
+        ),
+        _MetricTile(
+          title: 'Delivered Orders',
+          value: summary.orderCount.toString(),
+          subtitle: null,
+          color: AppColors.info,
+          icon: Icons.local_shipping_outlined,
+        ),
+        _MetricTile(
+          title: 'Avg. Order',
+          value: AppFormatters.currency(summary.avgOrderValue),
+          subtitle: null,
+          color: AppColors.success,
+          icon: Icons.trending_up_rounded,
         ),
       ],
     );
@@ -584,6 +568,7 @@ class _MetricTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.adaptive;
     return Container(
+      constraints: const BoxConstraints(minHeight: 138),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surface,
@@ -592,7 +577,6 @@ class _MetricTile extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
@@ -619,7 +603,7 @@ class _MetricTile extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const Spacer(),
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
@@ -634,19 +618,22 @@ class _MetricTile extends StatelessWidget {
               ),
             ),
           ),
-          if (subtitle != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              subtitle!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: colors.textHint,
-              ),
-            ),
-          ],
+          const SizedBox(height: 4),
+          SizedBox(
+            height: 16,
+            child: subtitle == null
+                ? const SizedBox.shrink()
+                : Text(
+                    subtitle!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textHint,
+                    ),
+                  ),
+          ),
         ],
       ),
     );

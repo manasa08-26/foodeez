@@ -45,14 +45,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textPrimary),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: colors.textPrimary),
           onPressed: () => context.go('/login'),
         ),
       ),
@@ -64,6 +65,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   Widget _buildForm() {
+    final colors = context.adaptive;
     return Form(
       key: _formKey,
       child: Column(
@@ -73,22 +75,25 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: AppColors.primarySurface,
+              color: colors.primarySurface,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(Icons.lock_reset_rounded,
-                color: AppColors.primary, size: 28),
+            child: Icon(Icons.lock_reset_rounded,
+                color: colors.primaryColor, size: 28),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Reset Password',
             style: TextStyle(
-                fontSize: 24, fontWeight: FontWeight.w700),
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              color: colors.textPrimary,
+            ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Enter your email and we\'ll send a reset link.',
-            style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 15, color: colors.textSecondary),
           ),
           const SizedBox(height: 32),
           AppTextField(

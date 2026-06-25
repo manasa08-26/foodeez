@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'app_switch.dart';
-import '../core/constants/app_assets.dart';
 import '../core/constants/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/branch_provider.dart';
 import '../providers/theme_provider.dart';
+import 'partner_logo.dart';
 
 String _initial(String? s, [String fallback = 'A']) {
   final v = s ?? '';
@@ -81,17 +81,9 @@ class ShellScaffold extends ConsumerWidget {
       scrolledUnderElevation: 1,
       shadowColor: isDark ? Colors.black26 : AppColors.border,
       toolbarHeight: 64,
-      leadingWidth: isDashboard ? 54 : 48,
+      leadingWidth: isDashboard ? 60 : 48,
       leading: isDashboard
-          ? Padding(
-              padding: const EdgeInsets.only(left: 14),
-              child: Image.asset(
-                'assets/images/logo.png',
-                width: 30,
-                height: 30,
-                fit: BoxFit.contain,
-              ),
-            )
+          ? null
           : canPop
               ? IconButton(
                   icon: Icon(Icons.arrow_back_ios_new_rounded,
@@ -105,16 +97,11 @@ class ShellScaffold extends ConsumerWidget {
                       onPressed: () => _handleBack(context, currentPath),
                     )
                   : null,
-      titleSpacing: isDashboard ? 4 : 0,
+      titleSpacing: isDashboard ? 0 : 0,
       title: isDashboard
-          ? SizedBox(
-              height: 36,
-              width: 112,
-              child: Image.asset(
-                AppAssets.brandTap,
-                fit: BoxFit.contain,
-                alignment: Alignment.centerLeft,
-              ),
+          ? const Align(
+              alignment: Alignment.centerLeft,
+              child: PartnerLogo.custom(width: 108, height: 40),
             )
           : Text(
               title,

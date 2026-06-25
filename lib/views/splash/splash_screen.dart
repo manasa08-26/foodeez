@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/constants/app_assets.dart';
+import '../../widgets/partner_logo.dart';
 import '../../core/constants/app_colors.dart';
 import '../../widgets/auth_screen_background.dart';
 
@@ -82,8 +82,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
+    final accent = colors.primaryColor;
+
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: colors.background,
       body: AuthScreenBackground(
         showDotGrid: true,
         child: SafeArea(
@@ -109,41 +112,39 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           child: ScaleTransition(
                             scale: _logoScale,
                             child: SizedBox(
-                              width: 220,
-                              height: 220,
+                              width: 140,
+                              height: 140,
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
                                   AnimatedBuilder(
                                     animation: _orbitCtrl,
                                     builder: (_, __) => CustomPaint(
-                                      size: const Size(220, 220),
+                                      size: const Size(140, 140),
                                       painter: _OrbitRingsPainter(
                                         rotation:
                                             _orbitCtrl.value * 2 * math.pi,
+                                        accent: accent,
                                       ),
                                     ),
                                   ),
                                   Container(
-                                    width: 118,
-                                    height: 118,
-                                    padding: const EdgeInsets.all(16),
+                                    width: 76,
+                                    height: 76,
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: AppColors.white,
-                                      borderRadius: BorderRadius.circular(30),
+                                      color: colors.primarySurface,
+                                      borderRadius: BorderRadius.circular(20),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: AppColors.primary
-                                              .withValues(alpha: 0.14),
+                                          color: accent.withValues(alpha: 0.14),
                                           blurRadius: 30,
                                           offset: const Offset(0, 12),
                                         ),
                                       ],
                                     ),
-                                    child: Image.asset(
-                                      AppAssets.profileLogo,
-                                      fit: BoxFit.contain,
-                                    ),
+                                    child: const PartnerLogo.splash(),
                                   ),
                                 ],
                               ),
@@ -164,7 +165,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 36,
                                     fontWeight: FontWeight.w900,
-                                    color: AppColors.primary,
+                                    color: accent,
                                     letterSpacing: -1,
                                     height: 1,
                                   ),
@@ -176,8 +177,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.primary
-                                        .withValues(alpha: 0.62),
+                                    color: accent.withValues(alpha: 0.62),
                                     letterSpacing: 2.8,
                                   ),
                                 ),
@@ -188,18 +188,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 28,
                                       fontWeight: FontWeight.w900,
-                                      color: AppColors.textPrimary,
+                                      color: colors.textPrimary,
                                       letterSpacing: -0.6,
                                       height: 1.1,
                                     ),
-                                    children: const [
-                                      TextSpan(text: 'Tap. '),
+                                    children: [
+                                      const TextSpan(text: 'Tap. '),
                                       TextSpan(
                                         text: 'Eat.',
-                                        style: TextStyle(
-                                            color: AppColors.primary),
+                                        style: TextStyle(color: accent),
                                       ),
-                                      TextSpan(text: ' Repeat.'),
+                                      const TextSpan(text: ' Repeat.'),
                                     ],
                                   ),
                                 ),
@@ -210,7 +209,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColors.textSecondary,
+                                    color: colors.textSecondary,
                                   ),
                                 ),
                               ],
@@ -240,15 +239,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               child: Stack(
                                 children: [
                                   Container(
-                                    color: AppColors.primary
-                                        .withValues(alpha: 0.12),
+                                    color: accent.withValues(alpha: 0.12),
                                   ),
                                   FractionallySizedBox(
                                     widthFactor:
                                         0.35 + (_progressCtrl.value * 0.55),
                                     child: Container(
-                                      decoration: const BoxDecoration(
-                                        gradient: AppColors.primaryGradient,
+                                      decoration: BoxDecoration(
+                                        gradient: colors.primaryGradient,
                                       ),
                                     ),
                                   ),
@@ -265,7 +263,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.primary.withValues(alpha: 0.7),
+                          color: accent.withValues(alpha: 0.7),
                           letterSpacing: 2.4,
                         ),
                       ),
@@ -276,7 +274,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           alignment: WrapAlignment.center,
                           spacing: 8,
                           runSpacing: 8,
-                          children: const [
+                          children: [
                             _FeatureChip(label: '👇 Tap to order'),
                             _FeatureChip(label: '🍔 Your favourites'),
                             _FeatureChip(label: '🛵 Fast delivery'),
@@ -300,12 +298,15 @@ class _PartnerPortalBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
+    final accent = colors.primaryColor;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.9),
+        color: colors.primarySurface.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(99),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.18)),
+        border: Border.all(color: accent.withValues(alpha: 0.18)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -313,8 +314,8 @@ class _PartnerPortalBadge extends StatelessWidget {
           Container(
             width: 7,
             height: 7,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
+            decoration: BoxDecoration(
+              color: accent,
               shape: BoxShape.circle,
             ),
           ),
@@ -324,7 +325,7 @@ class _PartnerPortalBadge extends StatelessWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 10.5,
               fontWeight: FontWeight.w800,
-              color: AppColors.primary,
+              color: accent,
               letterSpacing: 1.8,
             ),
           ),
@@ -341,19 +342,22 @@ class _FeatureChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
+    final accent = colors.primaryColor;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.primarySurface,
         borderRadius: BorderRadius.circular(99),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.16)),
+        border: Border.all(color: accent.withValues(alpha: 0.16)),
       ),
       child: Text(
         label,
         style: GoogleFonts.plusJakartaSans(
           fontSize: 11.5,
           fontWeight: FontWeight.w700,
-          color: AppColors.primary,
+          color: accent,
         ),
       ),
     );
@@ -361,27 +365,28 @@ class _FeatureChip extends StatelessWidget {
 }
 
 class _OrbitRingsPainter extends CustomPainter {
-  _OrbitRingsPainter({required this.rotation});
+  _OrbitRingsPainter({required this.rotation, required this.accent});
 
   final double rotation;
+  final Color accent;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final ringPaint = Paint()
-      ..color = AppColors.primary.withValues(alpha: 0.12)
+      ..color = accent.withValues(alpha: 0.12)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2;
 
-    for (final radius in [92.0, 104.0]) {
+    for (final radius in [58.0, 66.0]) {
       _drawDashedCircle(canvas, center, radius, ringPaint);
     }
 
     final dotPaint = Paint()
-      ..color = AppColors.primary
+      ..color = accent
       ..style = PaintingStyle.fill;
 
-    final radii = [92.0, 104.0, 98.0];
+    final radii = [70.0, 80.0, 75.0];
     for (var i = 0; i < radii.length; i++) {
       final angle = rotation + (i * 2 * math.pi / 3);
       final r = radii[i];
@@ -418,5 +423,5 @@ class _OrbitRingsPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _OrbitRingsPainter oldDelegate) =>
-      oldDelegate.rotation != rotation;
+      oldDelegate.rotation != rotation || oldDelegate.accent != accent;
 }

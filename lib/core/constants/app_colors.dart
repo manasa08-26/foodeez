@@ -81,6 +81,12 @@ class AppColors {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  static const LinearGradient payoutHeroGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF7B3FE4), Color(0xFF4C1D95)],
+  );
 }
 
 /// Theme-aware color accessors for widgets that cannot rely on ThemeData alone.
@@ -138,6 +144,13 @@ class AdaptiveAppColors {
   Color get cardShadow => _isDark
       ? Colors.black.withValues(alpha: 0.42)
       : Colors.black.withValues(alpha: 0.035);
+
+  LinearGradient get primaryGradient => AppColors.primaryGradient;
+
+  LinearGradient get cardGradient =>
+      _isDark ? AppColors.darkHeroGradient : AppColors.cardGradient;
+
+  LinearGradient get payoutHeroGradient => AppColors.payoutHeroGradient;
 }
 
 extension AdaptiveAppColorsContext on BuildContext {

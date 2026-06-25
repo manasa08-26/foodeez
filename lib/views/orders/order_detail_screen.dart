@@ -73,6 +73,9 @@ class _OrderHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final heroText = Colors.white;
+    final heroSubtext = Colors.white.withValues(alpha: 0.7);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -86,8 +89,8 @@ class _OrderHeader extends StatelessWidget {
             children: [
               Text(
                 '#${order.orderNumber}',
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: heroText,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                 ),
@@ -99,12 +102,12 @@ class _OrderHeader extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             AppFormatters.dateTime(order.createdAt),
-            style: const TextStyle(color: Colors.white70, fontSize: 13),
+            style: TextStyle(color: heroSubtext, fontSize: 13),
           ),
           const SizedBox(height: 4),
           Text(
             AppFormatters.paymentMethod(order.paymentMethod),
-            style: const TextStyle(color: Colors.white70, fontSize: 13),
+            style: TextStyle(color: heroSubtext, fontSize: 13),
           ),
         ],
       ),
@@ -144,6 +147,7 @@ class _ItemsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return _Card(
       title: 'Items (${order.items.length})',
       child: Column(
@@ -156,16 +160,16 @@ class _ItemsList extends StatelessWidget {
                         width: 28,
                         height: 28,
                         decoration: BoxDecoration(
-                          color: AppColors.primarySurface,
+                          color: colors.primarySurface,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Center(
                           child: Text(
                             '×${item.quantity}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.primary,
+                              color: colors.primaryColor,
                             ),
                           ),
                         ),
@@ -272,21 +276,22 @@ class _Card extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.adaptive;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primary)),
+                  color: colors.primaryColor)),
           const SizedBox(height: 12),
           child,
         ],

@@ -11,7 +11,9 @@ Future<bool?> showConfirmationDialog(
 }) {
   return showDialog<bool>(
     context: context,
-    builder: (ctx) => AlertDialog(
+    builder: (ctx) {
+      final scheme = Theme.of(ctx).colorScheme;
+      return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(
         title,
@@ -19,25 +21,26 @@ Future<bool?> showConfirmationDialog(
       ),
       content: Text(
         message,
-        style: const TextStyle(color: AppColors.textSecondary),
+        style: TextStyle(color: scheme.onSurfaceVariant),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx, false),
           child: Text(cancelLabel,
-              style: const TextStyle(color: AppColors.textSecondary)),
+              style: TextStyle(color: scheme.onSurfaceVariant)),
         ),
         ElevatedButton(
           onPressed: () => Navigator.pop(ctx, true),
           style: ElevatedButton.styleFrom(
-            backgroundColor: isDanger ? AppColors.error : AppColors.primary,
-            foregroundColor: Colors.white,
+            backgroundColor: isDanger ? AppColors.error : scheme.primary,
+            foregroundColor: isDanger ? Colors.white : scheme.onPrimary,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10)),
           ),
           child: Text(confirmLabel),
         ),
       ],
-    ),
+    );
+    },
   );
 }
