@@ -76,6 +76,8 @@ class ShellScaffold extends ConsumerWidget {
     final titleColor = Theme.of(context).colorScheme.onSurface;
 
     return AppBar(
+      automaticallyImplyLeading: false,
+      centerTitle: false,
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       elevation: 0,
       scrolledUnderElevation: 1,
@@ -99,9 +101,12 @@ class ShellScaffold extends ConsumerWidget {
                   : null,
       titleSpacing: isDashboard ? 0 : 0,
       title: isDashboard
-          ? const Align(
+          ? Align(
               alignment: Alignment.centerLeft,
-              child: PartnerLogo.custom(width: 108, height: 40),
+              child: PartnerLogo.custom(
+                width: 108,
+                height: 60,
+              ),
             )
           : Text(
               title,

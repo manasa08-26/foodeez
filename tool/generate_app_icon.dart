@@ -3,7 +3,7 @@ import 'package:image/image.dart' as img;
 
 void main() {
   final logo = img.decodeImage(
-    File('assets/images/partner_logo.png').readAsBytesSync(),
+    File('assets/images/partner_light.png').readAsBytesSync(),
   )!;
   const size = 1024;
   const scale = 0.52;
@@ -29,11 +29,13 @@ void main() {
 
   writeIcon('assets/images/partner_app_icon.png', whiteBackground: true);
   writeIcon('assets/images/partner_app_icon_foreground.png', whiteBackground: false);
-  stripNearWhiteBackground('assets/images/partner_logo.png');
-  stdout.writeln('stripped white background from partner_logo.png');
+  stripNearWhiteBackground('assets/images/partner_light.png');
+  stdout.writeln('stripped white background from partner_light.png');
+  stripNearWhiteBackground('assets/images/partner_dark.png');
+  stdout.writeln('stripped white background from partner_dark.png');
 }
 
-/// Makes near-white pixels transparent so the logo blends on dark app bars.
+/// Makes near-white pixels transparent so logos blend on any surface.
 void stripNearWhiteBackground(String path, {int threshold = 242}) {
   final file = File(path);
   final decoded = img.decodeImage(file.readAsBytesSync())!;

@@ -144,7 +144,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                         ),
                                       ],
                                     ),
-                                    child: const PartnerLogo.splash(),
+                                    child: PartnerLogo.splash(),
                                   ),
                                 ],
                               ),
