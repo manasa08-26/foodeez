@@ -128,24 +128,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    width: 76,
-                                    height: 76,
-                                    alignment: Alignment.center,
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: colors.primarySurface,
-                                      borderRadius: BorderRadius.circular(20),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: accent.withValues(alpha: 0.14),
-                                          blurRadius: 30,
-                                          offset: const Offset(0, 12),
-                                        ),
-                                      ],
-                                    ),
-                                    child: PartnerLogo.splash(),
-                                  ),
+                                  PartnerLogo.splash(),
                                 ],
                               ),
                             ),

@@ -18,24 +18,9 @@ class AuthBrandHeader extends StatelessWidget {
 
     return Column(
       children: [
-        Container(
-          padding: EdgeInsets.all(compact ? 8 : 10),
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(compact ? 18 : 22),
-            border: Border.all(color: colors.cardBorder),
-            boxShadow: [
-              BoxShadow(
-                color: accent.withValues(alpha: 0.12),
-                blurRadius: 28,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: PartnerLogo.custom(
-            width: compact ? 40 : 48,
-            height: compact ? 40 : 48,
-          ),
+        PartnerLogo.custom(
+          width: compact ? 40 : 48,
+          height: compact ? 40 : 48,
         ),
         SizedBox(height: compact ? 14 : 18),
         Text(

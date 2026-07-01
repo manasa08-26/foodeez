@@ -47,8 +47,13 @@ class OrderModel {
 
   factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
         id: json['id']?.toString() ?? '',
-        orderNumber: json['orderNumber']?.toString() ?? json['id'].toString(),
-        status: json['status']?.toString() ?? 'PLACED',
+        orderNumber: (json['orderNumber'] ??
+                json['order_number'] ??
+                json['displayNumber'] ??
+                json['id'])
+            ?.toString() ??
+            '',
+        status: (json['status']?.toString() ?? 'PLACED').toUpperCase(),
         customerId: json['customerId']?.toString(),
         customerName: (json['customerName'] ??
             json['customer']?['name'] ??
@@ -66,7 +71,7 @@ class OrderModel {
         subtotal: _toDouble(json['subtotal']),
         deliveryFee: _toDouble(json['deliveryFee']),
         discount: _toDouble(json['discount']),
-        total: _toDouble(json['total'] ?? json['totalAmount']),
+        total: _toDouble(json['total'] ?? json['totalAmount'] ?? json['grandTotal']),
         paymentMethod: json['paymentMethod']?.toString() ?? 'COD',
         paymentStatus: json['paymentStatus']?.toString(),
         specialInstructions: json['specialInstructions']?.toString(),
@@ -74,7 +79,8 @@ class OrderModel {
             ? json['deliveryAddress']
             : json['deliveryAddress']?['addressLine1']?.toString(),
         rejectionReason: json['rejectionReason']?.toString(),
-        prepTimeMinutes: _toInt(json['prepTimeMinutes']),
+        prepTimeMinutes:
+            _toInt(json['prepTimeMinutes'] ?? json['prep_time_minutes']),
         createdAt:
             DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
         updatedAt: json['updatedAt'] != null
@@ -83,8 +89,12 @@ class OrderModel {
       );
 
   bool get isPending => status == 'PLACED';
-  bool get isActive =>
-      ['PLACED', 'ACCEPTED', 'PREPARING'].contains(status);
+  bool get isActive => [
+        'PLACED',
+        'CONFIRMED',
+        'ACCEPTED',
+        'PREPARING',
+      ].contains(status);
 
   Map<String, dynamic> toJson() => {
         'id': id,

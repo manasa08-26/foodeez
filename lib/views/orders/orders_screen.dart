@@ -5,6 +5,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../providers/order_provider.dart';
+import '../../services/order_service.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/loading_overlay.dart';
 import '../../widgets/status_badge.dart';
@@ -12,12 +13,25 @@ import '../../widgets/status_badge.dart';
 const _statuses = [
   ('All', null),
   ('Placed', 'PLACED'),
-  ('Accepted', 'ACCEPTED'),
+  ('Confirmed', 'CONFIRMED'),
   ('Preparing', 'PREPARING'),
-  ('Ready', 'READY'),
+  ('Ready', 'READY_FOR_PICKUP'),
   ('Delivered', 'DELIVERED'),
   ('Cancelled', 'CANCELLED'),
 ];
+
+const _quickActions = <String, List<({String label, String next})>>{
+  'PLACED': [
+    (label: 'Accept', next: 'CONFIRMED'),
+    (label: 'Reject', next: 'CANCELLED'),
+  ],
+  'CONFIRMED': [
+    (label: 'Preparing', next: 'PREPARING'),
+  ],
+  'PREPARING': [
+    (label: 'Ready ✓', next: 'READY_FOR_PICKUP'),
+  ],
+};
 
 class OrdersScreen extends ConsumerWidget {
   const OrdersScreen({super.key});
@@ -158,6 +172,11 @@ class OrdersScreen extends ConsumerWidget {
                                         .toList(),
                                   ),
                                   const SizedBox(height: 10),
+                                  _OrderQuickActions(
+                                    orderId: order.id,
+                                    status: order.status,
+                                  ),
+                                  const SizedBox(height: 10),
                                   Row(
                                     children: [
                                       Text(
@@ -195,6 +214,76 @@ class OrdersScreen extends ConsumerWidget {
             ),
           ),
         ],
+    );
+  }
+}
+
+class _OrderQuickActions extends ConsumerStatefulWidget {
+  const _OrderQuickActions({
+    required this.orderId,
+    required this.status,
+  });
+
+  final String orderId;
+  final String status;
+
+  @override
+  ConsumerState<_OrderQuickActions> createState() =>
+      _OrderQuickActionsState();
+}
+
+class _OrderQuickActionsState extends ConsumerState<_OrderQuickActions> {
+  String? _busy;
+
+  Future<void> _run(String nextStatus) async {
+    setState(() => _busy = nextStatus);
+    try {
+      await ref
+          .read(orderServiceProvider)
+          .updateOrderStatus(widget.orderId, nextStatus);
+      ref.invalidate(ordersProvider);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = null);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final actions = _quickActions[widget.status.toUpperCase()];
+    if (actions == null || actions.isEmpty) return const SizedBox.shrink();
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: actions.map((action) {
+        final isBusy = _busy == action.next;
+        final isDanger = action.next == 'CANCELLED';
+        return TextButton(
+          onPressed: isBusy ? null : () => _run(action.next),
+          style: TextButton.styleFrom(
+            backgroundColor: isDanger
+                ? AppColors.error.withValues(alpha: 0.12)
+                : AppColors.success.withValues(alpha: 0.12),
+            foregroundColor: isDanger ? AppColors.error : AppColors.success,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(
+            isBusy ? 'Updating…' : action.label,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+          ),
+        );
+      }).toList(),
     );
   }
 }

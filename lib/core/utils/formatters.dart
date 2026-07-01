@@ -14,9 +14,11 @@ class AppFormatters {
   static String orderStatus(String status) {
     return switch (status.toUpperCase()) {
       'PLACED' => 'Placed',
+      'CONFIRMED' => 'Confirmed',
       'ACCEPTED' => 'Accepted',
       'PREPARING' => 'Preparing',
       'READY' => 'Ready',
+      'READY_FOR_PICKUP' => 'Ready for Pickup',
       'OUT_FOR_DELIVERY' => 'Out for Delivery',
       'DELIVERED' => 'Delivered',
       'CANCELLED' => 'Cancelled',

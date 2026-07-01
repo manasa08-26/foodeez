@@ -1,7 +1,7 @@
 /// App environment — production API only.
 class Env {
   /// Foodeez integration API (production).
-  static const String apiBaseUrl = 'https://int.foodeez.in/api/v1';
+  static const String apiBaseUrl = 'https://int.foodeez.in/restaurant/api/v1';
 
   /// 64-char hex string = 32 bytes AES key.
   /// Must match NEXT_PUBLIC_PASSWORD_ENCRYPTION_KEY in the web .env.local

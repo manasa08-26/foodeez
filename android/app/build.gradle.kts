@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.foodeez.foodeez_flutter"
+    namespace = "com.foodeez.foodeez_partner"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -19,7 +19,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.foodeez.foodeez_flutter"
+        applicationId = "com.foodeez.foodeez_partner"
         minSdk = flutter.minSdkVersion        // flutter_secure_storage requires 23+
         targetSdk = 36
         versionCode = flutter.versionCode

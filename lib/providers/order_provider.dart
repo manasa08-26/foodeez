@@ -114,6 +114,18 @@ class KdsNotifier extends Notifier<KdsState> {
     }
   }
 
+  Future<bool> updateRestaurantStatus(String orderId, String status) async {
+    try {
+      final updated = await ref
+          .read(orderServiceProvider)
+          .updateOrderStatus(orderId, status);
+      _updateOrder(updated);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void _updateOrder(OrderModel updated) {
     final newOrders =
         state.orders.map((o) => o.id == updated.id ? updated : o).toList();

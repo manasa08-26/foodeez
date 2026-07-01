@@ -32,6 +32,11 @@ class StatusBadge extends StatelessWidget {
 
   (Color, Color, String) _resolve(String s) => switch (s) {
         'PLACED' => (AppColors.statusPlaced, AppColors.infoSurface, 'Placed'),
+        'CONFIRMED' => (
+            AppColors.statusPlaced,
+            AppColors.infoSurface,
+            'Confirmed'
+          ),
         'ACCEPTED' => (
             AppColors.statusAccepted,
             AppColors.accentLight,
@@ -43,6 +48,21 @@ class StatusBadge extends StatelessWidget {
             'Preparing'
           ),
         'READY' => (AppColors.statusReady, AppColors.successSurface, 'Ready'),
+        'READY_FOR_PICKUP' => (
+            AppColors.statusReady,
+            AppColors.successSurface,
+            'Ready for Pickup'
+          ),
+        'PICKED_UP' => (
+            AppColors.statusDelivering,
+            const Color(0xFFCFFAFE),
+            'Picked Up'
+          ),
+        'ON_THE_WAY' => (
+            AppColors.statusDelivering,
+            const Color(0xFFCFFAFE),
+            'On the Way'
+          ),
         'OUT_FOR_DELIVERY' => (
             AppColors.statusDelivering,
             const Color(0xFFCFFAFE),

@@ -24,11 +24,29 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
 
   Future<void> _updateStatus(String status) async {
     setState(() => _isUpdating = true);
-    await ref
-        .read(orderServiceProvider)
-        .updateOrderStatus(widget.orderId, status);
-    ref.invalidate(orderDetailProvider(widget.orderId));
-    if (mounted) setState(() => _isUpdating = false);
+    try {
+      await ref
+          .read(orderServiceProvider)
+          .updateOrderStatus(widget.orderId, status);
+      ref.invalidate(orderDetailProvider(widget.orderId));
+      ref.invalidate(ordersProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Order updated to $status')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
+    }
   }
 
   @override
@@ -226,47 +244,161 @@ class _StatusActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return switch (order.status) {
-      'PLACED' => Row(
-          children: [
-            Expanded(
-              child: AppButton(
-                label: 'Reject',
-                isDanger: true,
-                isOutlined: true,
-                onPressed: () async {
-                  final confirmed = await showConfirmationDialog(
-                    context,
-                    title: 'Reject Order',
-                    message: 'Are you sure you want to reject this order?',
-                    confirmLabel: 'Reject',
+    final colors = context.adaptive;
+    final status = order.status.toUpperCase();
+    final banner = _bannerFor(status);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (banner != null) ...[
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: banner.bg,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: banner.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  banner.title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  banner.subtitle,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        switch (status) {
+          'PLACED' => Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    label: 'Reject Order',
                     isDanger: true,
-                  );
-                  if (confirmed == true) {
-                    onUpdateStatus('CANCELLED');
-                  }
-                },
-              ),
+                    isOutlined: true,
+                    onPressed: () async {
+                      final confirmed = await showConfirmationDialog(
+                        context,
+                        title: 'Reject Order',
+                        message:
+                            'Are you sure you want to reject this order?',
+                        confirmLabel: 'Reject',
+                        isDanger: true,
+                      );
+                      if (confirmed == true) {
+                        onUpdateStatus('CANCELLED');
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AppButton(
+                    label: 'Accept Order',
+                    icon: Icons.check_circle_outline,
+                    onPressed: () => onUpdateStatus('CONFIRMED'),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: AppButton(
-                label: 'Accept',
-                icon: Icons.check_circle_outline,
-                onPressed: () => onUpdateStatus('ACCEPTED'),
-              ),
+          'CONFIRMED' => Column(
+              children: [
+                AppButton(
+                  label: 'Start Preparing',
+                  width: double.infinity,
+                  icon: Icons.restaurant_rounded,
+                  onPressed: () => onUpdateStatus('PREPARING'),
+                ),
+                const SizedBox(height: 10),
+                AppButton(
+                  label: 'Cancel Order',
+                  width: double.infinity,
+                  isDanger: true,
+                  isOutlined: true,
+                  onPressed: () async {
+                    final confirmed = await showConfirmationDialog(
+                      context,
+                      title: 'Cancel Order',
+                      message: 'Cancel this confirmed order?',
+                      confirmLabel: 'Cancel Order',
+                      isDanger: true,
+                    );
+                    if (confirmed == true) {
+                      onUpdateStatus('CANCELLED');
+                    }
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-      'ACCEPTED' || 'PREPARING' => AppButton(
-          label: 'Mark as Ready',
-          width: double.infinity,
-          icon: Icons.check_circle_outline,
-          onPressed: () => onUpdateStatus('READY'),
-        ),
-      _ => const SizedBox.shrink(),
-    };
+          'PREPARING' => AppButton(
+              label: 'Mark Ready for Pickup',
+              width: double.infinity,
+              icon: Icons.check_circle_outline,
+              onPressed: () => onUpdateStatus('READY_FOR_PICKUP'),
+            ),
+          _ => const SizedBox.shrink(),
+        },
+      ],
+    );
   }
+
+  _OrderBanner? _bannerFor(String status) => switch (status) {
+        'PLACED' => const _OrderBanner(
+            title: 'New order awaiting your confirmation',
+            subtitle:
+                'Accept to start preparation or reject if you cannot fulfill it.',
+            bg: Color(0x14F59E0B),
+            border: Color(0x59F59E0B),
+          ),
+        'CONFIRMED' => const _OrderBanner(
+            title: 'Order confirmed — ready to start cooking?',
+            subtitle: 'Tap "Start Preparing" when the kitchen begins work.',
+            bg: Color(0x1438BDF8),
+            border: Color(0x4D38BDF8),
+          ),
+        'PREPARING' => const _OrderBanner(
+            title: 'Kitchen is preparing this order',
+            subtitle:
+                'Tap "Mark Ready for Pickup" once the food is packed.',
+            bg: Color(0x148B5CF6),
+            border: Color(0x4D8B5CF6),
+          ),
+        'READY_FOR_PICKUP' => const _OrderBanner(
+            title: 'Food is ready — waiting for delivery partner',
+            subtitle: 'A delivery partner will pick up the order shortly.',
+            bg: Color(0x1410B981),
+            border: Color(0x4D10B981),
+          ),
+        _ => null,
+      };
+}
+
+class _OrderBanner {
+  final String title;
+  final String subtitle;
+  final Color bg;
+  final Color border;
+  const _OrderBanner({
+    required this.title,
+    required this.subtitle,
+    required this.bg,
+    required this.border,
+  });
 }
 
 class _Card extends StatelessWidget {

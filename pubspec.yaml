@@ -69,6 +69,13 @@ flutter_launcher_icons:
   image_path: assets/images/partner_app_icon.png
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: assets/images/partner_app_icon_foreground.png
+  remove_alpha_ios: true
+  background_color_ios: "#FFFFFF"
+
+
+
+
+  
 
 flutter:
   uses-material-design: true

@@ -2,17 +2,23 @@ import 'dart:io';
 import 'package:image/image.dart' as img;
 
 void main() {
+  stripNearWhiteBackground('assets/images/partner_light.png');
+  stripNearWhiteBackground('assets/images/partner_dark.png');
+
   final logo = img.decodeImage(
     File('assets/images/partner_light.png').readAsBytesSync(),
   )!;
   const size = 1024;
-  const scale = 0.52;
+  const scale = 0.76;
 
-  void writeIcon(String path, {required bool whiteBackground}) {
-    final canvas = img.Image(width: size, height: size);
+  void writeLauncherIcon(String path, {required bool whiteBackground}) {
+    final canvas = img.Image(width: size, height: size, numChannels: 4);
     if (whiteBackground) {
       img.fill(canvas, color: img.ColorRgb8(255, 255, 255));
+    } else {
+      img.fill(canvas, color: img.ColorRgba8(0, 0, 0, 0));
     }
+
     final maxSide = (size * scale).round();
     final resized = img.copyResize(
       logo,
@@ -27,12 +33,11 @@ void main() {
     stdout.writeln('wrote $path');
   }
 
-  writeIcon('assets/images/partner_app_icon.png', whiteBackground: true);
-  writeIcon('assets/images/partner_app_icon_foreground.png', whiteBackground: false);
-  stripNearWhiteBackground('assets/images/partner_light.png');
-  stdout.writeln('stripped white background from partner_light.png');
-  stripNearWhiteBackground('assets/images/partner_dark.png');
-  stdout.writeln('stripped white background from partner_dark.png');
+  writeLauncherIcon('assets/images/partner_app_icon.png', whiteBackground: true);
+  writeLauncherIcon(
+    'assets/images/partner_app_icon_foreground.png',
+    whiteBackground: false,
+  );
 }
 
 /// Makes near-white pixels transparent so logos blend on any surface.

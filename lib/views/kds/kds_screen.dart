@@ -81,10 +81,16 @@ class _KdsScreenState extends ConsumerState<KdsScreen> {
   Widget build(BuildContext context) {
     final kdsState = ref.watch(liveOrdersProvider);
     final activeOrders = kdsState.orders
-        .where((o) => ['PLACED', 'ACCEPTED', 'PREPARING'].contains(o.status))
+        .where((o) => [
+              'PLACED',
+              'CONFIRMED',
+              'ACCEPTED',
+              'PREPARING',
+            ].contains(o.status.toUpperCase()))
         .toList();
-    final readyOrders =
-        kdsState.orders.where((o) => o.status == 'READY').toList();
+    final readyOrders = kdsState.orders
+        .where((o) => ['READY', 'READY_FOR_PICKUP'].contains(o.status.toUpperCase()))
+        .toList();
 
     return kdsState.isLoading && kdsState.orders.isEmpty
           ? Center(
@@ -194,11 +200,13 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
   int _prepTime = 15;
 
   // KDS amber/kitchen palette per order status
-  Color get _borderColor => switch (widget.order.status) {
+  Color get _borderColor => switch (widget.order.status.toUpperCase()) {
         'PLACED' => AppColors.statusPlaced,
+        'CONFIRMED' => AppColors.statusAccepted,
         'ACCEPTED' => AppColors.statusAccepted,
         'PREPARING' => AppColors.statusPreparing,
         'READY' => AppColors.statusReady,
+        'READY_FOR_PICKUP' => AppColors.statusReady,
         _ => Colors.white24,
       };
 
@@ -299,7 +307,8 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
 
   Widget _buildActions(OrderModel order) {
     final colors = context.adaptive;
-    if (order.status == 'PLACED') {
+    final status = order.status.toUpperCase();
+    if (status == 'PLACED') {
       return Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         child: Column(
@@ -366,14 +375,67 @@ class _KdsOrderCardState extends ConsumerState<_KdsOrderCard> {
         ),
       );
     }
-    if (order.status == 'ACCEPTED' || order.status == 'PREPARING') {
+    if (status == 'CONFIRMED') {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        child: _KdsBtn(
+          label: 'Start Preparing',
+          color: AppColors.warning,
+          onTap: () async {
+            final ok = await ref
+                .read(liveOrdersProvider.notifier)
+                .updateRestaurantStatus(order.id, 'PREPARING');
+            if (!ok && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Could not update order status'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            }
+          },
+        ),
+      );
+    }
+    if (status == 'ACCEPTED') {
       return Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
         child: _KdsBtn(
           label: '✓ Ready',
           color: AppColors.success,
           onTap: () async {
-            await ref.read(liveOrdersProvider.notifier).markReady(order.id);
+            final ok =
+                await ref.read(liveOrdersProvider.notifier).markReady(order.id);
+            if (!ok && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Could not mark order ready'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            }
+          },
+        ),
+      );
+    }
+    if (status == 'PREPARING') {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        child: _KdsBtn(
+          label: 'Ready for Pickup',
+          color: AppColors.success,
+          onTap: () async {
+            final ok = await ref
+                .read(liveOrdersProvider.notifier)
+                .updateRestaurantStatus(order.id, 'READY_FOR_PICKUP');
+            if (!ok && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Could not mark order ready'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            }
           },
         ),
       );

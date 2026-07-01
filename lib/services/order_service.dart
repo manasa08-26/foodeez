@@ -27,7 +27,9 @@ class OrderService {
         },
       );
       final list = _toList(res.data);
-      return list.map((e) => OrderModel.fromJson(e as Map<String, dynamic>)).toList();
+      return list
+          .map((e) => OrderModel.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -37,19 +39,26 @@ class OrderService {
     try {
       final res =
           await _dio.get(ApiEndpoints.restaurantOrder(orderId));
-      return OrderModel.fromJson(res.data);
+      return _parseOrder(res.data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
   }
 
   Future<OrderModel> updateOrderStatus(
-      String orderId, String status) async {
+    String orderId,
+    String status, {
+    String? note,
+  }) async {
     try {
       final res = await _dio.patch(
-          ApiEndpoints.restaurantOrderStatus(orderId),
-          data: {'status': status});
-      return OrderModel.fromJson(res.data);
+        ApiEndpoints.restaurantOrderStatus(orderId),
+        data: {
+          'status': status,
+          if (note != null && note.isNotEmpty) 'note': note,
+        },
+      );
+      return _parseOrder(res.data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -60,7 +69,9 @@ class OrderService {
     try {
       final res = await _dio.get(ApiEndpoints.partnerOrders);
       final list = _toList(res.data);
-      return list.map((e) => OrderModel.fromJson(e as Map<String, dynamic>)).toList();
+      return list
+          .map((e) => OrderModel.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -79,13 +90,27 @@ class OrderService {
     return [];
   }
 
+  static OrderModel _parseOrder(dynamic data) {
+    if (data is Map) {
+      final map = Map<String, dynamic>.from(data);
+      final nested = map['order'] ?? map['data'];
+      if (nested is Map) {
+        return OrderModel.fromJson(Map<String, dynamic>.from(nested));
+      }
+      if (map.containsKey('id')) {
+        return OrderModel.fromJson(map);
+      }
+    }
+    throw const FormatException('Unexpected order response shape');
+  }
+
   Future<OrderModel> acceptOrder(
       String orderId, int prepTimeMinutes) async {
     try {
       final res = await _dio.patch(
           ApiEndpoints.partnerOrderAccept(orderId),
-          data: {'prepTimeMinutes': prepTimeMinutes});
-      return OrderModel.fromJson(res.data);
+          data: {'prep_time_minutes': prepTimeMinutes});
+      return _parseOrder(res.data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -96,7 +121,7 @@ class OrderService {
       final res = await _dio.patch(
           ApiEndpoints.partnerOrderReject(orderId),
           data: {'reason': reason});
-      return OrderModel.fromJson(res.data);
+      return _parseOrder(res.data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
@@ -106,7 +131,7 @@ class OrderService {
     try {
       final res =
           await _dio.patch(ApiEndpoints.partnerOrderReady(orderId));
-      return OrderModel.fromJson(res.data);
+      return _parseOrder(res.data);
     } on DioException catch (e) {
       throw ApiException.fromDioError(e);
     }
